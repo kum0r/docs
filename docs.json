@@ -39,17 +39,24 @@
         "groups": [
           {
             "group": "API Documentation",
+            "pages": ["api-reference/introduction"]
+          },
+          {
+            "group": "Endpoint Documentation",
             "pages": [
-              "api-reference/introduction"
+              "api-reference/endpoint/create",
+              "api-reference/endpoint/read",
+              "api-reference/endpoint/update",
+              "api-reference/endpoint/delete"
             ]
           },
           {
-          "group": "Endpoints",
-          "openapi": {
-            "source": "api-reference/openapi.json",
-            "directory": "api-reference"
+            "group": "Endpoints",
+            "openapi": {
+              "source": "api-reference/openapi.json",
+              "directory": "api-reference"
+            }
           }
-        }
         ]
       }
     ],
