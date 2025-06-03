@@ -1,72 +1,374 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "OpenAPI Plant Store",
-    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
-    "license": {
-      "name": "MIT"
-    },
-    "version": "1.0.0"
+    "title": "Intermezzo Global Payroll",
+    "summary": "Global Payroll Gross-To-Net calculator",
+    "description": "Intermezzo's gross-to-net calculator is organized by country",
+    "version": "1.0.0",
+    "x-logo": { "url": "/static/icon.svg" }
   },
   "servers": [
-    {
-      "url": "http://sandbox.mintlify.com"
-    }
-  ],
-  "security": [
-    {
-      "bearerAuth": []
-    }
+    { "url": "https://demopay.intermezzo.ai", "description": "Sandbox" }
   ],
   "paths": {
-    "/plants": {
-      "get": {
-        "description": "Returns all plants from the system that the user has access to",
+    "/organizations": {
+      "post": {
+        "tags": ["Core"],
+        "summary": "Create Orgs",
+        "operationId": "create_orgs_organizations_post",
+        "security": [{ "BearerToken": [] }],
         "parameters": [
           {
-            "name": "limit",
+            "name": "request_model_exclude_unset",
             "in": "query",
-            "description": "The maximum number of results to return",
+            "required": false,
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "default": true,
+              "title": "Request Model Exclude Unset"
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/OrgRequest" }
+            }
+          }
+        },
         "responses": {
           "200": {
-            "description": "Plant response",
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/OrgResponse" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["Core"],
+        "summary": "List Orgs",
+        "operationId": "list_orgs_organizations_get",
+        "security": [{ "BearerToken": [] }],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Plant"
-                  }
+                  "items": { "$ref": "#/components/schemas/OrgResponse" },
+                  "title": "Response List Orgs Organizations Get"
                 }
               }
             }
-          },
-          "400": {
-            "description": "Unexpected error",
+          }
+        }
+      }
+    },
+    "/organizations/{organizationid}": {
+      "get": {
+        "tags": ["Core"],
+        "summary": "Get Org",
+        "operationId": "get_org_organizations__organizationid__get",
+        "security": [{ "BearerToken": [] }],
+        "parameters": [
+          {
+            "name": "organizationid",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Organizationid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
+                "schema": { "$ref": "#/components/schemas/OrgResponse" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/organizations/{organizationid}/employees/{employeeid}": {
+      "get": {
+        "tags": ["Core"],
+        "summary": "Get Employee",
+        "operationId": "get_employee_organizations__organizationid__employees__employeeid__get",
+        "security": [{ "BearerToken": [] }],
+        "parameters": [
+          {
+            "name": "organizationid",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Organizationid" }
+          },
+          {
+            "name": "employeeid",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Employeeid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/organizations/{organization_id}/employees": {
+      "get": {
+        "tags": ["Core"],
+        "summary": "List Employees",
+        "description": "List all employees for an organization, returning the correct schema per employee.",
+        "operationId": "list_employees_organizations__organization_id__employees_get",
+        "security": [{ "BearerToken": [] }],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Organization Id" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
               }
             }
           }
         }
       },
       "post": {
-        "description": "Creates a new plant in the store",
+        "tags": ["Core"],
+        "summary": "Create Employees",
+        "operationId": "create_employees_organizations__organization_id__employees_post",
+        "security": [{ "BearerToken": [] }],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Organization Id" }
+          }
+        ],
         "requestBody": {
-          "description": "Plant to add to the store",
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NewPlant"
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/EmployeeRequest" },
+                "title": "Employees"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payrollrun/{runid}/approve": {
+      "post": {
+        "tags": ["Core"],
+        "summary": "Approve Payroll",
+        "operationId": "approve_payroll_payrollrun__runid__approve_post",
+        "security": [{ "BearerToken": [] }],
+        "parameters": [
+          {
+            "name": "runid",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Runid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/RunDetails" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/usa": {
+      "post": {
+        "tags": ["USA Paycheck Calculator"],
+        "summary": "Gtn",
+        "operationId": "GTN_usa_post",
+        "parameters": [
+          {
+            "name": "request_model_exclude_unset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": true,
+              "title": "Request Model Exclude Unset"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/GrossToNetRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/GrossToNetResponse" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/germany": {
+      "post": {
+        "tags": ["Germany Paycheck Calculator"],
+        "summary": "Gtn",
+        "operationId": "GTN_germany_post",
+        "parameters": [
+          {
+            "name": "request_model_exclude_unset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": true,
+              "title": "Request Model Exclude Unset"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PayrollRequest2025" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PayrollResponse2025" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/germany/insurance-agencies": {
+      "get": {
+        "tags": ["Germany Paycheck Calculator"],
+        "summary": "List Insurance Agencies",
+        "description": "Get list of insurance agencies with their contribution rates",
+        "operationId": "list_insurance_agencies_germany_insurance_agencies_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InsuranceAgenciesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/germany/payrollrun/new": {
+      "post": {
+        "tags": ["Germany Paycheck Calculator"],
+        "summary": "New Payroll",
+        "operationId": "new_payroll_germany_payrollrun_new_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/payroll__germany__schema__request__PayrollRequest"
               }
             }
           },
@@ -74,79 +376,116 @@
         },
         "responses": {
           "200": {
-            "description": "plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Plant"
-                }
-              }
-            }
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
           },
-          "400": {
-            "description": "unexpected error",
+          "422": {
+            "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
               }
             }
           }
         }
       }
     },
-    "/plants/{id}": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
+    "/uk/payrollrun/new": {
+      "post": {
+        "tags": ["UK Paycheck Calculator"],
+        "summary": "New Payroll",
+        "operationId": "new_payroll_uk_payrollrun_new_post",
+        "security": [{ "BearerToken": [] }],
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
-            "description": "ID of plant to delete",
-            "required": true,
+            "name": "request_model_exclude_unset",
+            "in": "query",
+            "required": false,
             "schema": {
-              "type": "integer",
-              "format": "int64"
+              "default": true,
+              "title": "Request Model Exclude Unset"
             }
           }
         ],
-        "responses": {
-          "204": {
-            "description": "Plant deleted",
-            "content": {}
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "webhooks": {
-    "/plant/webhook": {
-      "post": {
-        "description": "Information about a new plant added to the store",
         "requestBody": {
-          "description": "Plant added to the store",
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NewPlant"
+                "$ref": "#/components/schemas/payroll__uk__schema__request__PayrollRequest"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Return a 200 status to indicate that the data was received successfully"
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PayrollResponse" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/uk/payrollrun/{payrun_id}/update": {
+      "post": {
+        "tags": ["UK Paycheck Calculator"],
+        "summary": "Update Payroll",
+        "operationId": "update_payroll_uk_payrollrun__payrun_id__update_post",
+        "security": [{ "BearerToken": [] }],
+        "parameters": [
+          {
+            "name": "payrun_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Payrun Id" }
+          },
+          {
+            "name": "request_model_exclude_unset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": true,
+              "title": "Request Model Exclude Unset"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/payroll__uk__schema__request__PayrollRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PayrollResponse" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
           }
         }
       }
@@ -154,64 +493,3500 @@
   },
   "components": {
     "schemas": {
-      "Plant": {
-        "required": [
-          "name"
-        ],
+      "AZTaxInfo": {
+        "properties": {
+          "taxState": {
+            "type": "string",
+            "const": "Arizona",
+            "title": "Taxstate"
+          },
+          "withholdingPercent": {
+            "type": "integer",
+            "multipleOf": 5.0,
+            "exclusiveMaximum": 40.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Withholdingpercent",
+            "description": "Withholding percentage",
+            "default": 20
+          },
+          "additionalStateWithholding": {
+            "anyOf": [
+              { "type": "number", "minimum": 0.0 },
+              { "type": "string" }
+            ],
+            "title": "Additionalstatewithholding",
+            "description": "Additional AZ withholding",
+            "default": "0.00"
+          },
+          "exempt": {
+            "type": "boolean",
+            "title": "Exempt",
+            "description": "Are you exempt from state tax withholding?",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
         "type": "object",
+        "required": ["taxState"],
+        "title": "AZTaxInfo"
+      },
+      "AdditionalTaxableGrossItems": {
+        "properties": {
+          "name": { "type": "string", "title": "Name" },
+          "amount": {
+            "anyOf": [
+              { "type": "number", "minimum": 0.0 },
+              { "type": "string" }
+            ],
+            "type": "number",
+            "multipleOf": 0.01,
+            "minimum": 0.0,
+            "title": "Amount"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["name", "amount"],
+        "title": "AdditionalTaxableGrossItems"
+      },
+      "AmountType": {
+        "type": "string",
+        "enum": ["percent", "fixed"],
+        "title": "AmountType"
+      },
+      "BankAccountRequest": {
+        "properties": {
+          "financialInstitutionName": {
+            "type": "string",
+            "title": "Financialinstitutionname"
+          },
+          "accountNumber": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Accountnumber"
+          },
+          "routingNumber": {
+            "anyOf": [
+              { "type": "string", "maxLength": 9, "minLength": 9 },
+              { "type": "null" }
+            ],
+            "title": "Routingnumber"
+          },
+          "iban": {
+            "anyOf": [
+              { "type": "string", "maxLength": 34, "title": "IBAN" },
+              { "type": "null" }
+            ],
+            "title": "Iban"
+          },
+          "isActive": {
+            "type": "boolean",
+            "title": "Isactive",
+            "default": true
+          },
+          "isPrimary": {
+            "type": "boolean",
+            "title": "Isprimary",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["financialInstitutionName"],
+        "title": "BankAccountRequest",
+        "description": "Schema for creating/updating bank accounts"
+      },
+      "BankAccountResponse": {
+        "properties": {
+          "financialInstitutionName": {
+            "type": "string",
+            "title": "Financialinstitutionname"
+          },
+          "accountNumber": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Accountnumber"
+          },
+          "routingNumber": {
+            "anyOf": [
+              { "type": "string", "maxLength": 9, "minLength": 9 },
+              { "type": "null" }
+            ],
+            "title": "Routingnumber"
+          },
+          "iban": {
+            "anyOf": [
+              { "type": "string", "title": "IBAN" },
+              { "type": "null" }
+            ],
+            "title": "Iban"
+          },
+          "isActive": {
+            "type": "boolean",
+            "title": "Isactive",
+            "default": true
+          },
+          "isPrimary": {
+            "type": "boolean",
+            "title": "Isprimary",
+            "default": false
+          },
+          "id": { "type": "string", "title": "Id" },
+          "employeeId": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Employeeid"
+          },
+          "orgId": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Orgid"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "financialInstitutionName",
+          "id",
+          "employeeId",
+          "orgId",
+          "createdAt",
+          "updatedAt"
+        ],
+        "title": "BankAccountResponse",
+        "description": "Schema for bank account responses"
+      },
+      "BenefitType": {
+        "type": "string",
+        "enum": [
+          "Company Car",
+          "Car Fuel",
+          "Van",
+          "Van Fuel",
+          "Living Accommodation",
+          "Beneficial Loan",
+          "Medical Insurance",
+          "Asset Transferred",
+          "Asset Available",
+          "Mileage Allowance",
+          "Entertainment",
+          "Credit Card",
+          "Vouchers",
+          "Telephone",
+          "Mobile Telephone",
+          "Relocation Expenses",
+          "Services Provided",
+          "Professional Subscription",
+          "Other Benefit",
+          "School Fees",
+          "Educational Assistance",
+          "Childcare",
+          "Holiday",
+          "Non-Executive Director Fees",
+          "Scholarships"
+        ],
+        "title": "BenefitType"
+      },
+      "BenefitsResponse": {
+        "properties": {
+          "benefits": { "$ref": "#/components/schemas/PretaxDeductions" },
+          "pretaxDeductions": {
+            "type": "string",
+            "title": "Pretaxdeductions",
+            "default": "0"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["benefits"],
+        "title": "BenefitsResponse"
+      },
+      "BusinessType": {
+        "type": "string",
+        "enum": [
+          "Sole Proprietorship",
+          "LLC",
+          "C Corporation",
+          "S Corporation",
+          "Partnership"
+        ],
+        "title": "BusinessType"
+      },
+      "Car": {
+        "properties": {
+          "name": { "type": "string", "const": "Company Car", "title": "Name" },
+          "value": {
+            "anyOf": [
+              {
+                "anyOf": [
+                  { "type": "number", "minimum": 0.0 },
+                  { "type": "string" }
+                ],
+                "type": "number",
+                "multipleOf": 0.01,
+                "minimum": 0.0
+              },
+              { "type": "null" }
+            ],
+            "title": "Value",
+            "description": "Cost of car"
+          },
+          "additionalPayments": {
+            "anyOf": [
+              {
+                "anyOf": [{ "type": "number" }, { "type": "string" }],
+                "type": "number",
+                "multipleOf": 0.01
+              },
+              { "type": "null" }
+            ],
+            "title": "Additionalpayments",
+            "description": "Zuzahl. Firmenw. stpfl.",
+            "default": "0.00"
+          },
+          "privateTrip": {
+            "anyOf": [
+              {
+                "anyOf": [
+                  { "type": "number", "minimum": 0.0 },
+                  { "type": "string" }
+                ],
+                "type": "number",
+                "multipleOf": 0.01,
+                "minimum": 0.0
+              },
+              { "type": "null" }
+            ],
+            "title": "Privatetrip",
+            "description": "Privatfahrten",
+            "default": "0.00"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["name"],
+        "title": "Car"
+      },
+      "CompanyCar": {
+        "properties": {
+          "additionalPayments": {
+            "anyOf": [
+              {
+                "anyOf": [{ "type": "number" }, { "type": "string" }],
+                "type": "number",
+                "multipleOf": 0.01
+              },
+              { "type": "null" }
+            ],
+            "title": "Additionalpayments",
+            "description": "Zuzahl. Firmenw. stpfl."
+          },
+          "privateTrip": {
+            "anyOf": [
+              {
+                "anyOf": [
+                  { "type": "number", "minimum": 0.0 },
+                  { "type": "string" }
+                ],
+                "type": "number",
+                "multipleOf": 0.01,
+                "minimum": 0.0
+              },
+              { "type": "null" }
+            ],
+            "title": "Privatetrip",
+            "description": "Privatfahrten"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "CompanyCar"
+      },
+      "CompanyPension": {
+        "properties": {
+          "employeeContribution": {
+            "anyOf": [
+              { "type": "number", "minimum": 0.0 },
+              { "type": "string" }
+            ],
+            "type": "number",
+            "multipleOf": 0.01,
+            "minimum": 0.0,
+            "title": "Employeecontribution",
+            "description": "bAV AN",
+            "default": "0.00"
+          },
+          "employerContribution": {
+            "anyOf": [
+              { "type": "number", "minimum": 0.0 },
+              { "type": "string" }
+            ],
+            "type": "number",
+            "multipleOf": 0.01,
+            "minimum": 0.0,
+            "title": "Employercontribution",
+            "description": "bAV AG",
+            "default": "0.00"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "CompanyPension"
+      },
+      "CurrentPayPeriod": {
+        "properties": {
+          "employee": {
+            "$ref": "#/components/schemas/EmployeeCurrentPayPeriod"
+          },
+          "employer": {
+            "$ref": "#/components/schemas/EmployerCurrentPayPeriod"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "CurrentPayPeriod"
+      },
+      "DeductionType": {
+        "type": "string",
+        "enum": ["Garnishment", "Loan Repayment"],
+        "title": "DeductionType"
+      },
+      "DeductionsResponse": {
         "properties": {
           "name": {
-            "description": "The name of the plant",
-            "type": "string"
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Name"
           },
-          "tag": {
-            "description": "Tag to specify the type",
-            "type": "string"
-          }
-        }
+          "amount": { "type": "string", "title": "Amount", "default": "0.00" }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "DeductionsResponse"
       },
-      "NewPlant": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Plant"
+      "EarningsResponse": {
+        "properties": {
+          "baseSalary": { "type": "string", "title": "Basesalary" },
+          "hourlyPay": { "type": "string", "title": "Hourlypay" },
+          "overtime": { "type": "string", "title": "Overtime" },
+          "totalEarnings": { "type": "string", "title": "Totalearnings" }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["baseSalary", "hourlyPay", "overtime", "totalEarnings"],
+        "title": "EarningsResponse"
+      },
+      "EmployeeBenefits": {
+        "properties": {
+          "benefitsInKind": {
+            "type": "string",
+            "title": "Benefitsinkind",
+            "default": "0.00"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "EmployeeBenefits"
+      },
+      "EmployeeCurrentPayPeriod": {
+        "properties": {
+          "totals": { "$ref": "#/components/schemas/EmployeeTotals" },
+          "benefits": { "$ref": "#/components/schemas/EmployeeBenefits" },
+          "taxes": { "$ref": "#/components/schemas/EmployeeTaxes" },
+          "insurance": { "$ref": "#/components/schemas/EmployeeInsurance" },
+          "deductions": {
+            "items": { "$ref": "#/components/schemas/DeductionsResponse" },
+            "type": "array",
+            "title": "Deductions"
           },
-          {
-            "required": [
-              "id"
+          "reimbursements": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ReimbursementResponse"
+                },
+                "type": "array"
+              },
+              { "type": "null" }
             ],
-            "type": "object",
-            "properties": {
-              "id": {
-                "description": "Identification number of the plant",
-                "type": "integer",
-                "format": "int64"
+            "title": "Reimbursements"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "EmployeeCurrentPayPeriod"
+      },
+      "EmployeeDetails": {
+        "properties": {
+          "employeeId": {
+            "type": "integer",
+            "title": "Employeeid",
+            "description": "Mitarbeiterkennzeichen - Employee identification number"
+          },
+          "yearOfBirth": {
+            "type": "integer",
+            "maximum": 2025.0,
+            "minimum": 1850.0,
+            "title": "Yearofbirth",
+            "description": "Geburtsjahr - Birth Year to check eligibility for Altersentlastungsbetrag"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["employeeId", "yearOfBirth"],
+        "title": "EmployeeDetails"
+      },
+      "EmployeeGTNRequest": {
+        "properties": {
+          "employeeId": {
+            "type": "integer",
+            "title": "Employeeid",
+            "description": "Employee ID"
+          },
+          "earnings": { "$ref": "#/components/schemas/Job" },
+          "payDate": {
+            "type": "string",
+            "format": "date",
+            "title": "Paydate",
+            "description": "Last Pay Date"
+          },
+          "benefits": {
+            "$ref": "#/components/schemas/payroll__usa__schemas__Benefits",
+            "default": {
+              "medical": "0.00",
+              "dental": "0.00",
+              "vision": "0.00",
+              "healthcareFSA": "0.00",
+              "dependentFSA": "0.00",
+              "healthcareHSA": "0.00",
+              "retirement": [
+                { "amount": "0.00", "amountType": "fixed", "type": "401(k)" }
+              ]
+            }
+          },
+          "taxInfo": {
+            "anyOf": [
+              { "$ref": "#/components/schemas/TaxInfo" },
+              { "$ref": "#/components/schemas/Pre2020TaxInfo" }
+            ],
+            "title": "Taxinfo",
+            "default": {
+              "filingStatus": "Single",
+              "usePre2020W4": false,
+              "isNonresidentAlien": false,
+              "workTwoJobs": false,
+              "dependentAmount": 0,
+              "otherIncome": "0.00",
+              "deductions": "0.00",
+              "additionalWithholding": "0.00"
+            }
+          },
+          "stateTaxInfo": {
+            "oneOf": [
+              { "$ref": "#/components/schemas/PATaxInfo" },
+              { "$ref": "#/components/schemas/AZTaxInfo" }
+            ],
+            "title": "Statetaxinfo",
+            "description": "State Tax Data",
+            "discriminator": {
+              "propertyName": "taxState",
+              "mapping": {
+                "Arizona": "#/components/schemas/AZTaxInfo",
+                "Pennsylvania": "#/components/schemas/PATaxInfo"
+              }
+            }
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["employeeId", "earnings"],
+        "title": "EmployeeGTNRequest"
+      },
+      "EmployeeGTNResponse": {
+        "properties": {
+          "earnings": { "$ref": "#/components/schemas/EarningsResponse" },
+          "benefits": { "$ref": "#/components/schemas/BenefitsResponse" },
+          "taxes": { "$ref": "#/components/schemas/TaxesResponse" },
+          "posttax": {
+            "anyOf": [
+              { "$ref": "#/components/schemas/PostTaxDeductionsResponse" },
+              { "type": "null" }
+            ]
+          },
+          "employeeId": { "type": "integer", "title": "Employeeid" }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["earnings", "benefits", "taxes", "posttax", "employeeId"],
+        "title": "EmployeeGTNResponse"
+      },
+      "EmployeeInsurance": {
+        "properties": {
+          "insuranceAssessmentBase": {
+            "type": "string",
+            "title": "Insuranceassessmentbase",
+            "default": "0.00"
+          },
+          "nationalInsurance": {
+            "type": "string",
+            "title": "Nationalinsurance",
+            "default": "0.00"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "EmployeeInsurance"
+      },
+      "EmployeeRequest": {
+        "properties": {
+          "createdAt": {
+            "anyOf": [
+              { "type": "string", "format": "date-time" },
+              { "type": "null" }
+            ],
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "anyOf": [
+              { "type": "string", "format": "date-time" },
+              { "type": "null" }
+            ],
+            "title": "Updatedat"
+          },
+          "formattedAddress": { "type": "string", "title": "Formattedaddress" },
+          "streetNumber": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Streetnumber"
+          },
+          "road": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Road"
+          },
+          "city": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "City"
+          },
+          "state": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "State"
+          },
+          "country": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Country"
+          },
+          "postalCode": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Postalcode"
+          },
+          "postalCodeSuffix": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Postalcodesuffix"
+          },
+          "latitude": {
+            "anyOf": [{ "type": "number" }, { "type": "null" }],
+            "title": "Latitude"
+          },
+          "longitude": {
+            "anyOf": [{ "type": "number" }, { "type": "null" }],
+            "title": "Longitude"
+          },
+          "legalFullName": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Legalfullname"
+          },
+          "personalEmail": {
+            "anyOf": [
+              { "type": "string", "format": "email" },
+              { "type": "null" }
+            ],
+            "title": "Personalemail"
+          },
+          "workEmail": {
+            "anyOf": [
+              { "type": "string", "format": "email" },
+              { "type": "null" }
+            ],
+            "title": "Workemail"
+          },
+          "phoneNumbers": {
+            "anyOf": [
+              {
+                "items": { "$ref": "#/components/schemas/PhoneNumbers" },
+                "type": "array"
+              },
+              { "type": "null" }
+            ],
+            "title": "Phonenumbers",
+            "description": "List of phone numbers with type and primary status",
+            "example": [
+              {
+                "isPrimary": true,
+                "phoneNumber": "+447911123456",
+                "phoneType": "mobile"
+              }
+            ]
+          },
+          "dob": {
+            "anyOf": [
+              { "type": "string", "format": "date" },
+              { "type": "null" }
+            ],
+            "title": "Dob"
+          },
+          "department": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Department"
+          },
+          "startDate": {
+            "anyOf": [
+              { "type": "string", "format": "date" },
+              { "type": "null" }
+            ],
+            "title": "Startdate"
+          },
+          "terminationDate": {
+            "anyOf": [
+              { "type": "string", "format": "date" },
+              { "type": "null" }
+            ],
+            "title": "Terminationdate"
+          },
+          "companyOfficer": {
+            "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+            "title": "Companyofficer"
+          },
+          "companyContact": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Companycontact"
+          },
+          "worksiteId": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Worksiteid"
+          },
+          "taxInfo": {
+            "oneOf": [
+              { "$ref": "#/components/schemas/UKTaxInfo" },
+              { "$ref": "#/components/schemas/USTaxInfo" }
+            ],
+            "title": "Taxinfo",
+            "discriminator": {
+              "propertyName": "country",
+              "mapping": {
+                "UnitedKingdom": "#/components/schemas/UKTaxInfo",
+                "UnitedStates": "#/components/schemas/USTaxInfo"
+              }
+            }
+          },
+          "bankAccounts": {
+            "items": { "$ref": "#/components/schemas/BankAccountRequest" },
+            "type": "array",
+            "title": "Bankaccounts"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "legalFullName",
+          "personalEmail",
+          "workEmail",
+          "dob",
+          "department",
+          "startDate",
+          "companyOfficer",
+          "companyContact",
+          "worksiteId",
+          "taxInfo",
+          "bankAccounts"
+        ],
+        "title": "EmployeeRequest",
+        "description": "Schema for creating/updating employees"
+      },
+      "EmployeeTaxes": {
+        "properties": {
+          "incomeTaxAssessmentBase": {
+            "type": "string",
+            "title": "Incometaxassessmentbase",
+            "default": "0.00"
+          },
+          "incomeTax": {
+            "type": "string",
+            "title": "Incometax",
+            "default": "0.00"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "EmployeeTaxes"
+      },
+      "EmployeeTotals": {
+        "properties": {
+          "grossWages": {
+            "type": "string",
+            "title": "Grosswages",
+            "default": "0.00"
+          },
+          "netWages": {
+            "type": "string",
+            "title": "Netwages",
+            "default": "0.00"
+          },
+          "totalDeductions": {
+            "type": "string",
+            "title": "Totaldeductions",
+            "default": "0.00"
+          },
+          "totalReimbursements": {
+            "type": "string",
+            "title": "Totalreimbursements",
+            "default": "0.00"
+          },
+          "netPay": { "type": "string", "title": "Netpay", "default": "0.00" }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "EmployeeTotals"
+      },
+      "EmployerCurrentPayPeriod": {
+        "properties": {
+          "secondaryClass1Nic": {
+            "type": "string",
+            "title": "Secondaryclass1Nic",
+            "default": "0.00"
+          },
+          "class1ANic": {
+            "type": "string",
+            "title": "Class1Anic",
+            "default": "0.00"
+          },
+          "employerPensionContribution": {
+            "type": "string",
+            "title": "Employerpensioncontribution",
+            "default": "0.00"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "EmployerCurrentPayPeriod"
+      },
+      "EmployerLiabilitiesResponse": {
+        "properties": {
+          "pensionContribution": {
+            "type": "string",
+            "title": "Pensioncontribution",
+            "description": "",
+            "default": "0.00"
+          },
+          "healthInsuranceContribution": {
+            "type": "string",
+            "title": "Healthinsurancecontribution",
+            "description": "Vorsorgepauschale (VKVLZZ) - Insurance allowance for the period",
+            "default": "0.00"
+          },
+          "careInsuranceContribution": {
+            "type": "string",
+            "title": "Careinsurancecontribution",
+            "description": "",
+            "default": "0.00"
+          },
+          "unemploymentInsuranceContribution": {
+            "type": "string",
+            "title": "Unemploymentinsurancecontribution",
+            "description": "",
+            "default": "0.00"
+          },
+          "sickPayInsuranceContribution": {
+            "type": "string",
+            "title": "Sickpayinsurancecontribution",
+            "description": "",
+            "default": "0.00"
+          },
+          "maternityPayInsuranceContribution": {
+            "type": "string",
+            "title": "Maternitypayinsurancecontribution",
+            "description": "",
+            "default": "0.00"
+          },
+          "insolvencyInsuranceContribution": {
+            "type": "string",
+            "title": "Insolvencyinsurancecontribution",
+            "description": "",
+            "default": "0.00"
+          },
+          "totalBurden": {
+            "type": "string",
+            "title": "Totalburden",
+            "description": "",
+            "default": "0.00"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "EmployerLiabilitiesResponse"
+      },
+      "Errors": {
+        "properties": {
+          "employeeId": { "type": "string", "title": "Employeeid" },
+          "error": { "type": "string", "title": "Error" }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["employeeId", "error"],
+        "title": "Errors"
+      },
+      "Exemptions": {
+        "properties": {
+          "federalIncomeTax": {
+            "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+            "title": "Federalincometax",
+            "description": "Exempt from Federal Income Tax",
+            "default": false
+          },
+          "medicareTax": {
+            "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+            "title": "Medicaretax",
+            "description": "Exempt from Medicare Tax",
+            "default": false
+          },
+          "socialsecurityTax": {
+            "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+            "title": "Socialsecuritytax",
+            "description": "Exempt from Social Security Tax",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "Exemptions"
+      },
+      "FilingStatus": {
+        "type": "string",
+        "enum": ["Single", "Married", "Head of household"],
+        "title": "FilingStatus"
+      },
+      "GTNResponse": {
+        "properties": {
+          "earnings": { "$ref": "#/components/schemas/EarningsResponse" },
+          "benefits": { "$ref": "#/components/schemas/BenefitsResponse" },
+          "taxes": { "$ref": "#/components/schemas/TaxesResponse" },
+          "posttax": {
+            "anyOf": [
+              { "$ref": "#/components/schemas/PostTaxDeductionsResponse" },
+              { "type": "null" }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["earnings", "benefits", "taxes", "posttax"],
+        "title": "GTNResponse"
+      },
+      "GermanStates": {
+        "type": "string",
+        "enum": [
+          "Baden-Württemberg",
+          "Bayern",
+          "Berlin",
+          "Brandenburg",
+          "Bremen",
+          "Hamburg",
+          "Hessen",
+          "Mecklenburg-Vorpommern",
+          "Niedersachsen",
+          "Nordrhein-Westfalen",
+          "Rheinland-Pfalz",
+          "Saarland",
+          "Sachsen",
+          "Sachsen-Anhalt",
+          "Schleswig-Holstein",
+          "Thüringen"
+        ],
+        "title": "GermanStates",
+        "description": "German states (Bundesländer) with their official names"
+      },
+      "GrossToNetRequest": {
+        "properties": {
+          "payrollRun": {
+            "items": { "$ref": "#/components/schemas/EmployeeGTNRequest" },
+            "type": "array",
+            "title": "Payrollrun",
+            "description": "List of Employee Payroll Data"
+          },
+          "checkDate": {
+            "anyOf": [
+              { "type": "string", "format": "date" },
+              { "type": "null" }
+            ],
+            "title": "Checkdate",
+            "description": "Check Date"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["payrollRun"],
+        "title": "GrossToNetRequest",
+        "examples": [
+          {
+            "payrollRun": [
+              {
+                "benefits": {
+                  "medical": 100.0,
+                  "retirement": [
+                    {
+                      "amount": 5,
+                      "amountType": "percent",
+                      "type": "Roth 403(b)"
+                    }
+                  ]
+                },
+                "earnings": {
+                  "baseSalary": [
+                    { "amount": 3269.23, "frequency": "per pay period" }
+                  ],
+                  "payPeriod": "biweekly"
+                },
+                "employeeId": 1,
+                "stateTaxInfo": {
+                  "homeAddress": "1110 Waverly St, Philadelphia, PA 19147",
+                  "taxState": "Pennsylvania",
+                  "workAddress": "1110 Waverly St, Philadelphia, PA 19147"
+                },
+                "taxInfo": {
+                  "additionalWithholding": 0,
+                  "deductions": 0,
+                  "dependentAmount": 0,
+                  "filingStatus": "Married",
+                  "otherIncome": 0,
+                  "usePre2020W4": false,
+                  "workTwoJobs": false
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "GrossToNetResponse": {
+        "properties": {
+          "summary": { "$ref": "#/components/schemas/GTNResponse" },
+          "employeeGtn": {
+            "items": { "$ref": "#/components/schemas/EmployeeGTNResponse" },
+            "type": "array",
+            "title": "Employeegtn"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["summary", "employeeGtn"],
+        "title": "GrossToNetResponse",
+        "examples": [
+          {
+            "employeeGtn": [
+              {
+                "benefits": {
+                  "benefits": {
+                    "dental": "0",
+                    "dependentFSA": "0",
+                    "healthcareFSA": "0",
+                    "healthcareHSA": "0",
+                    "medical": "100",
+                    "retirementAmount": "0",
+                    "retirementPlans": [],
+                    "vision": "0"
+                  },
+                  "pretaxDeductions": "100"
+                },
+                "earnings": {
+                  "baseSalary": "3269.23",
+                  "hourlyPay": "0.0",
+                  "overtime": "0",
+                  "totalEarnings": "3269.23"
+                },
+                "employeeId": 1,
+                "posttax": {
+                  "posttaxDeductions": "163.46",
+                  "retirementPlans": [
+                    { "amount": "163.46", "type": "Roth 403(b)" }
+                  ]
+                },
+                "taxes": {
+                  "additionalMedicareTaxes": "0.00",
+                  "federalTaxes": "223.50",
+                  "medicareTaxes": "45.95",
+                  "socialSecurityTaxes": "196.49",
+                  "stateTaxes": {
+                    "earnedIncomeTax": "122.60",
+                    "localServiceTax": "0.00",
+                    "stateIncomeTax": "97.30",
+                    "stateUnemploymentInsurance": "2.29",
+                    "taxState": "Pennsylvania",
+                    "totalStateTaxes": "222.19"
+                  },
+                  "totalTaxes": "688.13"
+                }
+              }
+            ],
+            "summary": {
+              "benefits": {
+                "benefits": {
+                  "dental": "0",
+                  "dependentFSA": "0",
+                  "healthcareFSA": "0",
+                  "healthcareHSA": "0",
+                  "medical": "100",
+                  "retirementAmount": "0",
+                  "vision": "0"
+                },
+                "pretaxDeductions": "100"
+              },
+              "earnings": {
+                "baseSalary": "3269.23",
+                "hourlyPay": "0.0",
+                "overtime": "0",
+                "totalEarnings": "3269.23"
+              },
+              "posttax": { "posttaxDeductions": "163.46" },
+              "taxes": {
+                "additionalMedicareTaxes": "0.00",
+                "federalTaxes": "223.50",
+                "medicareTaxes": "45.95",
+                "socialSecurityTaxes": "196.49",
+                "stateTaxes": {
+                  "stateIncomeTax": "0",
+                  "taxState": "Pennsylvania",
+                  "totalStateTaxes": "0"
+                },
+                "totalTaxes": "688.13"
               }
             }
           }
         ]
       },
-      "Error": {
-        "required": [
-          "error",
-          "message"
-        ],
-        "type": "object",
+      "GrossWages": {
         "properties": {
-          "error": {
-            "type": "integer",
-            "format": "int32"
+          "earnings": {
+            "$ref": "#/components/schemas/payroll__germany__schemas__Earnings"
           },
-          "message": {
-            "type": "string"
+          "companyCar": {
+            "anyOf": [
+              { "$ref": "#/components/schemas/CompanyCar" },
+              { "type": "null" }
+            ],
+            "description": "Firmenwagen"
+          },
+          "companyPension": {
+            "anyOf": [
+              { "$ref": "#/components/schemas/CompanyPension" },
+              { "type": "null" }
+            ]
+          },
+          "vwl": {
+            "anyOf": [
+              { "$ref": "#/components/schemas/VWL" },
+              { "type": "null" }
+            ]
+          },
+          "additionalItems": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/AdditionalTaxableGrossItems"
+                },
+                "type": "array"
+              },
+              { "type": "null" }
+            ],
+            "title": "Additionalitems"
           }
-        }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["earnings"],
+        "title": "GrossWages"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": { "$ref": "#/components/schemas/ValidationError" },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HealthInsuranceType": {
+        "type": "string",
+        "enum": [
+          "Statutory KV",
+          "Private KV without employer subsidy",
+          "Private KV with employer subsidy"
+        ],
+        "title": "HealthInsuranceType",
+        "description": "Krankenversicherungsart (PKV)"
+      },
+      "HourlyPay": {
+        "properties": {
+          "hours": {
+            "anyOf": [
+              { "type": "number", "minimum": 0.0 },
+              { "type": "string" },
+              { "type": "null" }
+            ],
+            "title": "Hours",
+            "description": "Gross pay amount",
+            "default": "0.00"
+          },
+          "rate": {
+            "anyOf": [
+              { "type": "number", "minimum": 0.0 },
+              { "type": "string" },
+              { "type": "null" }
+            ],
+            "title": "Rate",
+            "description": "Annual or per pay period",
+            "default": "0.00"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "HourlyPay"
+      },
+      "InsuranceAgenciesResponse": {
+        "properties": {
+          "agencies": {
+            "items": { "$ref": "#/components/schemas/InsuranceAgencyResponse" },
+            "type": "array",
+            "title": "Agencies"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["agencies"],
+        "title": "InsuranceAgenciesResponse",
+        "description": "Response wrapper for list of insurance agencies",
+        "examples": [
+          {
+            "agencies": [
+              {
+                "agencyCode": "12345678",
+                "contributionRate": 1.2,
+                "shortName": "TK"
+              },
+              {
+                "agencyCode": "87654321",
+                "contributionRate": 1.5,
+                "shortName": "AOK"
+              }
+            ]
+          }
+        ]
+      },
+      "InsuranceAgencyResponse": {
+        "properties": {
+          "agencyCode": {
+            "type": "string",
+            "title": "Agencycode",
+            "description": "Insurance agency identification code"
+          },
+          "shortName": {
+            "type": "string",
+            "title": "Shortname",
+            "description": "Short name of the insurance agency"
+          },
+          "contributionRate": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Contributionrate",
+            "description": "Additional health insurance contribution rate in percent"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["agencyCode", "shortName"],
+        "title": "InsuranceAgencyResponse",
+        "description": "Response schema for insurance agency endpoint"
+      },
+      "InsuranceDetails": {
+        "properties": {
+          "pensionInsuranceType": {
+            "$ref": "#/components/schemas/PensionInsuranceType",
+            "description": "Rentenversicherung (KRV) - Pension insurance type"
+          },
+          "healthInsuranceType": {
+            "$ref": "#/components/schemas/HealthInsuranceType",
+            "description": "Krankenversicherung (PKV) - Health insurance type"
+          },
+          "healthInsurerAgencyCode": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Healthinsureragencycode",
+            "description": "Krankenversicherungscode (KVK) - Health insurer agency code"
+          },
+          "privateInsuranceMonthly": {
+            "anyOf": [
+              {
+                "anyOf": [
+                  { "type": "number", "minimum": 0.0 },
+                  { "type": "string" }
+                ],
+                "type": "number",
+                "multipleOf": 0.01,
+                "minimum": 0.0
+              },
+              { "type": "null" }
+            ],
+            "title": "Privateinsurancemonthly",
+            "description": "Private Krankenversicherung (PKPV) - Monthly private health/care insurance contribution",
+            "default": "0"
+          },
+          "careInsuranceChildren": {
+            "type": "integer",
+            "maximum": 5.0,
+            "minimum": 0.0,
+            "title": "Careinsurancechildren",
+            "description": "Anzahl Kinder Pflegeversicherung (PVA) - Number of children for care insurance discount (0-5), choose 5 for 5 or more",
+            "default": 0
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["pensionInsuranceType", "healthInsuranceType"],
+        "title": "InsuranceDetails"
+      },
+      "Job": {
+        "properties": {
+          "baseSalary": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/payroll__usa__schemas__BaseSalary"
+                },
+                "type": "array"
+              },
+              { "type": "null" }
+            ],
+            "title": "Basesalary",
+            "description": "Salary Info"
+          },
+          "hourlyPay": {
+            "anyOf": [
+              {
+                "items": { "$ref": "#/components/schemas/HourlyPay" },
+                "type": "array"
+              },
+              { "type": "null" }
+            ],
+            "title": "Hourlypay",
+            "description": "Hourly Pay"
+          },
+          "overtime": {
+            "anyOf": [
+              {
+                "items": { "$ref": "#/components/schemas/Overtime" },
+                "type": "array"
+              },
+              { "type": "null" }
+            ],
+            "title": "Overtime"
+          },
+          "ytdGross": {
+            "anyOf": [
+              { "type": "number", "minimum": 0.0 },
+              { "type": "string" },
+              { "type": "null" }
+            ],
+            "title": "Ytdgross",
+            "description": "Year to date Gross amount from most recent paycheck",
+            "default": "0.00"
+          },
+          "payPeriod": {
+            "anyOf": [
+              { "$ref": "#/components/schemas/PayFrequency" },
+              { "type": "null" }
+            ],
+            "description": "How often do you get paid?"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "Job"
+      },
+      "NICCategory": {
+        "type": "string",
+        "enum": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E",
+          "F",
+          "H",
+          "I",
+          "J",
+          "K",
+          "L",
+          "M",
+          "N",
+          "S",
+          "V",
+          "X",
+          "Z"
+        ],
+        "title": "NICCategory",
+        "description": "NIC Letter Categories"
+      },
+      "NonCarBenefits": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              { "type": "string", "const": "Company Pension" },
+              { "type": "string", "const": "Capital-forming" },
+              { "type": "string", "const": "Allowances" },
+              { "type": "string", "const": "Meal Plan" },
+              { "type": "string", "const": "Gym" },
+              { "type": "string", "const": "Other" }
+            ],
+            "title": "Name"
+          },
+          "employeeShare": {
+            "anyOf": [
+              { "type": "number", "minimum": 0.0 },
+              { "type": "string" }
+            ],
+            "type": "number",
+            "multipleOf": 0.01,
+            "minimum": 0.0,
+            "title": "Employeeshare",
+            "default": "0.00"
+          },
+          "employerShare": {
+            "anyOf": [
+              { "type": "number", "minimum": 0.0 },
+              { "type": "string" }
+            ],
+            "type": "number",
+            "multipleOf": 0.01,
+            "minimum": 0.0,
+            "title": "Employershare",
+            "default": "0.00"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["name"],
+        "title": "NonCarBenefits"
+      },
+      "OrgRequest": {
+        "properties": {
+          "legalName": { "type": "string", "title": "Legalname" },
+          "legalAddress": { "type": "string", "title": "Legaladdress" },
+          "dbaName": { "type": "string", "title": "Dbaname" },
+          "registrationCountry": {
+            "type": "string",
+            "pattern": "^\\w{2}$",
+            "title": "Registrationcountry"
+          },
+          "incorporationDate": {
+            "type": "string",
+            "format": "date",
+            "title": "Incorporationdate"
+          },
+          "website": { "type": "string", "title": "Website" },
+          "taxIdentifiers": {
+            "oneOf": [
+              { "$ref": "#/components/schemas/UKTaxIdentifier" },
+              { "$ref": "#/components/schemas/USTaxIdentifier" }
+            ],
+            "title": "Taxidentifiers",
+            "discriminator": {
+              "propertyName": "country",
+              "mapping": {
+                "GB": "#/components/schemas/UKTaxIdentifier",
+                "US": "#/components/schemas/USTaxIdentifier"
+              }
+            }
+          },
+          "externalRef": {
+            "anyOf": [
+              { "type": "string", "maxLength": 255 },
+              { "type": "null" }
+            ],
+            "title": "Externalref"
+          },
+          "workSites": {
+            "items": { "$ref": "#/components/schemas/WorkSiteRequest" },
+            "type": "array",
+            "title": "Worksites"
+          },
+          "bankAccounts": {
+            "items": { "$ref": "#/components/schemas/BankAccountRequest" },
+            "type": "array",
+            "title": "Bankaccounts"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "legalName",
+          "legalAddress",
+          "dbaName",
+          "registrationCountry",
+          "incorporationDate",
+          "website",
+          "taxIdentifiers",
+          "workSites",
+          "bankAccounts"
+        ],
+        "title": "OrgRequest"
+      },
+      "OrgResponse": {
+        "properties": {
+          "legalName": { "type": "string", "title": "Legalname" },
+          "legalAddress": { "type": "string", "title": "Legaladdress" },
+          "dbaName": { "type": "string", "title": "Dbaname" },
+          "registrationCountry": {
+            "type": "string",
+            "pattern": "^\\w{2}$",
+            "title": "Registrationcountry"
+          },
+          "incorporationDate": {
+            "type": "string",
+            "format": "date",
+            "title": "Incorporationdate"
+          },
+          "website": { "type": "string", "title": "Website" },
+          "taxIdentifiers": {
+            "oneOf": [
+              { "$ref": "#/components/schemas/UKTaxIdentifier" },
+              { "$ref": "#/components/schemas/USTaxIdentifier" }
+            ],
+            "title": "Taxidentifiers",
+            "discriminator": {
+              "propertyName": "country",
+              "mapping": {
+                "GB": "#/components/schemas/UKTaxIdentifier",
+                "US": "#/components/schemas/USTaxIdentifier"
+              }
+            }
+          },
+          "externalRef": {
+            "anyOf": [
+              { "type": "string", "maxLength": 255 },
+              { "type": "null" }
+            ],
+            "title": "Externalref"
+          },
+          "id": { "type": "string", "title": "Id" },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          },
+          "createdBy": { "type": "string", "title": "Createdby" },
+          "workSites": {
+            "anyOf": [
+              {
+                "items": { "$ref": "#/components/schemas/WorkSiteResponse" },
+                "type": "array"
+              },
+              { "type": "null" }
+            ],
+            "title": "Worksites"
+          },
+          "bankAccounts": {
+            "anyOf": [
+              {
+                "items": { "$ref": "#/components/schemas/BankAccountResponse" },
+                "type": "array"
+              },
+              { "type": "null" }
+            ],
+            "title": "Bankaccounts"
+          }
+        },
+        "type": "object",
+        "required": [
+          "legalName",
+          "legalAddress",
+          "dbaName",
+          "registrationCountry",
+          "incorporationDate",
+          "website",
+          "taxIdentifiers",
+          "id",
+          "createdAt",
+          "updatedAt",
+          "createdBy",
+          "workSites",
+          "bankAccounts"
+        ],
+        "title": "OrgResponse"
+      },
+      "Overtime": {
+        "properties": {
+          "hours": {
+            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "title": "Hours",
+            "description": "Overtime hours worked",
+            "default": 0
+          },
+          "rate": {
+            "anyOf": [
+              { "type": "number", "minimum": 0.0 },
+              { "type": "string" },
+              { "type": "null" }
+            ],
+            "title": "Rate",
+            "description": "Hourly rate for Overtime",
+            "default": "0.00"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "Overtime"
+      },
+      "PAExemptions": {
+        "properties": {
+          "stateIncomeTax": {
+            "type": "boolean",
+            "title": "Stateincometax",
+            "description": "Exempt from State Income Tax?",
+            "default": false
+          },
+          "localServiceTax": {
+            "type": "boolean",
+            "title": "Localservicetax",
+            "description": "Exempt from Local Service Tax?",
+            "default": false
+          },
+          "earnedIncomeTax": {
+            "type": "boolean",
+            "title": "Earnedincometax",
+            "description": "Exempt from Earned Income Tax?",
+            "default": false
+          },
+          "stateUnemploymentInsurance": {
+            "type": "boolean",
+            "title": "Stateunemploymentinsurance",
+            "description": "Exempt from State Unemployment Insurance?",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "PAExemptions"
+      },
+      "PATaxInfo": {
+        "properties": {
+          "taxState": {
+            "type": "string",
+            "const": "Pennsylvania",
+            "title": "Taxstate"
+          },
+          "homeAddress": {
+            "type": "string",
+            "title": "Homeaddress",
+            "description": "Address of your home"
+          },
+          "workAddress": {
+            "type": "string",
+            "title": "Workaddress",
+            "description": "Address of your work location"
+          },
+          "additionalStateWithholding": {
+            "anyOf": [
+              { "type": "number", "minimum": 0.0 },
+              { "type": "string" }
+            ],
+            "title": "Additionalstatewithholding",
+            "description": "Additional PA withholding",
+            "default": "0.00"
+          },
+          "exemptions": {
+            "anyOf": [
+              { "$ref": "#/components/schemas/PAExemptions" },
+              { "type": "null" }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["taxState"],
+        "title": "PATaxInfo"
+      },
+      "PayCycleType-Input": {
+        "type": "string",
+        "enum": ["Year", "Month", "Week", "Day"],
+        "title": "PayCycleType",
+        "description": "Lohnzahlungszeitraum (LZZ)"
+      },
+      "PayCycleType-Output": {
+        "type": "string",
+        "enum": ["Year", "Month", "Week", "Day"],
+        "title": "PayCycleType"
+      },
+      "PayFrequency": {
+        "type": "string",
+        "enum": ["weekly", "biweekly", "monthly", "semimonthly"],
+        "title": "PayFrequency"
+      },
+      "PayPeriodResponse": {
+        "properties": {
+          "paymentPeriod": {
+            "$ref": "#/components/schemas/PaymentPeriod-Output"
+          },
+          "employeeId": { "type": "integer", "title": "Employeeid" },
+          "currentPayPeriod": {
+            "$ref": "#/components/schemas/PayrollAmountsResponse"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["paymentPeriod", "employeeId", "currentPayPeriod"],
+        "title": "PayPeriodResponse"
+      },
+      "PaymentPeriod-Output": {
+        "type": "string",
+        "enum": ["Year", "Month", "Week", "Day"],
+        "title": "PaymentPeriod",
+        "description": "Lohnzahlungszeitraum (LZZ)"
+      },
+      "PayrollAmountsResponse": {
+        "properties": {
+          "employee": { "$ref": "#/components/schemas/PayrollResponseBase" },
+          "employer": {
+            "$ref": "#/components/schemas/EmployerLiabilitiesResponse"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["employee", "employer"],
+        "title": "PayrollAmountsResponse"
+      },
+      "PayrollRequest2025": {
+        "properties": {
+          "payrollRun": {
+            "items": {
+              "$ref": "#/components/schemas/payroll__germany__schemas__PayrollRequestBase"
+            },
+            "type": "array",
+            "title": "Payrollrun"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["payrollRun"],
+        "title": "PayrollRequest2025",
+        "description": "Input parameters according to PAP2025",
+        "examples": [
+          {
+            "payrollRun": [
+              {
+                "careInsuranceChildren": 2,
+                "childAllowances": 2,
+                "churchTaxState": "Berlin",
+                "employeeId": 100,
+                "grossWages": 54000,
+                "healthInsuranceType": "Statutory KV",
+                "healthInsurer": "TK",
+                "inSaxony": false,
+                "isChurchMember": true,
+                "paymentPeriod": "Year",
+                "pensionInsuranceType": "Statutory",
+                "taxClass": "1",
+                "yearOfBirth": 1960
+              }
+            ]
+          },
+          {
+            "payrollRun": [
+              {
+                "careInsuranceChildren": 1,
+                "childAllowances": 1.5,
+                "employeeId": 101,
+                "grossWages": 4500,
+                "healthInsuranceType": "Private KV with employer subsidy",
+                "healthInsurer": "OTHER",
+                "inSaxony": true,
+                "isChurchMember": false,
+                "paymentPeriod": "Month",
+                "pensionInsuranceType": "Statutory",
+                "privateInsuranceMonthly": 400.0,
+                "taxClass": "3",
+                "yearOfBirth": 1985
+              }
+            ]
+          }
+        ],
+        "x-order": ["payrollRun"]
+      },
+      "PayrollResponse": {
+        "properties": {
+          "run": {
+            "anyOf": [
+              { "$ref": "#/components/schemas/RunDetails" },
+              { "type": "null" }
+            ]
+          },
+          "payslips": {
+            "items": { "$ref": "#/components/schemas/Payslip" },
+            "type": "array",
+            "title": "Payslips"
+          },
+          "errors": {
+            "anyOf": [
+              {
+                "items": { "$ref": "#/components/schemas/Errors" },
+                "type": "array"
+              },
+              { "type": "null" }
+            ],
+            "title": "Errors"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["run", "payslips", "errors"],
+        "title": "PayrollResponse"
+      },
+      "PayrollResponse2025": {
+        "properties": {
+          "summary": { "$ref": "#/components/schemas/PayrollAmountsResponse" },
+          "grossToNet": {
+            "items": { "$ref": "#/components/schemas/PayPeriodResponse" },
+            "type": "array",
+            "title": "Grosstonet"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["summary", "grossToNet"],
+        "title": "PayrollResponse2025",
+        "description": "Output parameters according to PAP2025"
+      },
+      "PayrollResponseBase": {
+        "properties": {
+          "grossWages": {
+            "type": "string",
+            "title": "Grosswages",
+            "description": "Steuerpflichtiger Arbeitslohn (RE4) - Taxable wages for the period",
+            "default": "0.00"
+          },
+          "healthInsuranceAdditionalRate": {
+            "type": "string",
+            "title": "Healthinsuranceadditionalrate",
+            "default": "0.00"
+          },
+          "wageTax": {
+            "type": "string",
+            "title": "Wagetax",
+            "description": "Lohnsteuer (LSTLZZ) - Wage tax for the period",
+            "default": "0.00"
+          },
+          "solidaritySurcharge": {
+            "type": "string",
+            "title": "Solidaritysurcharge",
+            "description": "Solidaritätszuschlag (SOLZLZZ) - Solidarity surcharge for the period",
+            "default": "0.00"
+          },
+          "churchTaxAssessmentBasis": {
+            "type": "string",
+            "title": "Churchtaxassessmentbasis"
+          },
+          "churchTax": {
+            "type": "string",
+            "title": "Churchtax",
+            "description": "Bemessungsgrundlage Kirchensteuer (BK) - Church tax base amount",
+            "default": "0.00"
+          },
+          "pensionContribution": {
+            "type": "string",
+            "title": "Pensioncontribution",
+            "description": "",
+            "default": "0.00"
+          },
+          "healthInsuranceContribution": {
+            "type": "string",
+            "title": "Healthinsurancecontribution",
+            "description": "Vorsorgepauschale (VKVLZZ) - Insurance allowance for the period",
+            "default": "0.00"
+          },
+          "careInsuranceContribution": {
+            "type": "string",
+            "title": "Careinsurancecontribution",
+            "description": "",
+            "default": "0.00"
+          },
+          "unemploymentInsuranceContribution": {
+            "type": "string",
+            "title": "Unemploymentinsurancecontribution",
+            "description": "",
+            "default": "0.00"
+          },
+          "netPay": {
+            "type": "string",
+            "title": "Netpay",
+            "description": "Nettoverdienst - Net Pay for the period",
+            "default": "0.00"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "PayrollResponseBase"
+      },
+      "PayrunStatus": {
+        "type": "string",
+        "enum": ["draft", "approved", "paid"],
+        "title": "PayrunStatus",
+        "description": "Payrun status"
+      },
+      "Payslip": {
+        "properties": {
+          "paymentPeriod": {
+            "$ref": "#/components/schemas/PayCycleType-Output",
+            "default": "Month"
+          },
+          "employeeId": { "type": "string", "title": "Employeeid" },
+          "currentPayPeriod": {
+            "$ref": "#/components/schemas/CurrentPayPeriod"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["employeeId", "currentPayPeriod"],
+        "title": "Payslip"
+      },
+      "PensionInsuranceType": {
+        "type": "string",
+        "enum": ["Statutory", "Other"],
+        "title": "PensionInsuranceType",
+        "description": "Merker für die Vorsorgepauschale (KRV)"
+      },
+      "PhoneNumbers": {
+        "properties": {
+          "phoneNumber": {
+            "type": "string",
+            "format": "phone",
+            "title": "Phonenumber"
+          },
+          "phoneType": { "$ref": "#/components/schemas/PhoneType" },
+          "isPrimary": { "type": "boolean", "title": "Isprimary" }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["phoneNumber", "phoneType", "isPrimary"],
+        "title": "PhoneNumbers"
+      },
+      "PhoneType": {
+        "type": "string",
+        "enum": ["mobile", "home", "work"],
+        "title": "PhoneType"
+      },
+      "PostTaxDeductionsResponse": {
+        "properties": {
+          "retirementPlans": {
+            "anyOf": [
+              {
+                "items": { "$ref": "#/components/schemas/RetirementResponse" },
+                "type": "array"
+              },
+              { "type": "null" }
+            ],
+            "title": "Retirementplans"
+          },
+          "posttaxDeductions": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Posttaxdeductions",
+            "default": "0"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "PostTaxDeductionsResponse"
+      },
+      "Pre2020TaxInfo": {
+        "properties": {
+          "filingStatus": {
+            "$ref": "#/components/schemas/FilingStatus",
+            "description": "Employee's tax filing status",
+            "default": "Single"
+          },
+          "usePre2020W4": {
+            "type": "boolean",
+            "const": true,
+            "title": "Usepre2020W4"
+          },
+          "isNonresidentAlien": {
+            "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+            "title": "Isnonresidentalien",
+            "description": "Are you a Non Resident Alien?",
+            "default": false
+          },
+          "allowances": {
+            "anyOf": [
+              { "type": "integer", "minimum": 0.0 },
+              { "type": "null" }
+            ],
+            "title": "Allowances",
+            "description": "How many allowances do you have?",
+            "default": 0
+          },
+          "additionalWithholding": {
+            "anyOf": [
+              { "type": "number", "minimum": 0.0 },
+              { "type": "string" },
+              { "type": "null" }
+            ],
+            "title": "Additionalwithholding",
+            "description": "Additional withholding from each paycheck",
+            "default": "0.00"
+          },
+          "exemptions": {
+            "anyOf": [
+              { "$ref": "#/components/schemas/Exemptions" },
+              { "type": "null" }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["usePre2020W4"],
+        "title": "Pre2020TaxInfo"
+      },
+      "PretaxDeductions": {
+        "properties": {
+          "medical": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Medical",
+            "description": "Medical Insurance deduction per pay period",
+            "default": "0.00"
+          },
+          "dental": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Dental",
+            "description": "Dental Insurance deduction per pay period",
+            "default": "0.00"
+          },
+          "vision": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Vision",
+            "description": "Vision Insurance deduction per pay period",
+            "default": "0.00"
+          },
+          "healthcareFSA": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Healthcarefsa",
+            "description": "FSA contribution per pay period",
+            "default": "0.00"
+          },
+          "dependentFSA": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Dependentfsa",
+            "description": "Dependent FSA contribution per pay period",
+            "default": "0.00"
+          },
+          "healthcareHSA": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Healthcarehsa",
+            "description": "HSA contribution per pay period",
+            "default": "0.00"
+          },
+          "retirementAmount": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Retirementamount",
+            "default": "0"
+          },
+          "retirementPlans": {
+            "anyOf": [
+              {
+                "items": { "$ref": "#/components/schemas/RetirementResponse" },
+                "type": "array"
+              },
+              { "type": "null" }
+            ],
+            "title": "Retirementplans"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "PretaxDeductions"
+      },
+      "ReimbursementResponse": {
+        "properties": {
+          "name": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Name"
+          },
+          "amount": { "type": "string", "title": "Amount", "default": "0.00" }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ReimbursementResponse"
+      },
+      "Retirement": {
+        "properties": {
+          "type": {
+            "anyOf": [
+              { "$ref": "#/components/schemas/RetirementPlanType" },
+              { "type": "null" }
+            ],
+            "description": "Retirement Plan Type",
+            "default": "401(k)"
+          },
+          "amountType": {
+            "anyOf": [
+              { "$ref": "#/components/schemas/AmountType" },
+              { "type": "null" }
+            ],
+            "description": "Amount Type",
+            "default": "fixed"
+          },
+          "amount": {
+            "anyOf": [
+              { "type": "number", "minimum": 0.0 },
+              { "type": "string" },
+              { "type": "null" }
+            ],
+            "title": "Amount",
+            "description": "Contribution Amount",
+            "default": "0.00"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "Retirement"
+      },
+      "RetirementPlanType": {
+        "type": "string",
+        "enum": [
+          "401(k)",
+          "403(b)",
+          "401(k) Catch Up",
+          "403(b) Catch Up",
+          "Roth 401(k)",
+          "Roth 403(b)"
+        ],
+        "title": "RetirementPlanType"
+      },
+      "RetirementResponse": {
+        "properties": {
+          "type": { "type": "string", "title": "Type" },
+          "amount": { "type": "string", "title": "Amount" }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["type", "amount"],
+        "title": "RetirementResponse"
+      },
+      "RunDetails": {
+        "properties": {
+          "runId": { "type": "string", "title": "Runid" },
+          "externalRef": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Externalref"
+          },
+          "status": { "$ref": "#/components/schemas/PayrunStatus" }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["runId", "externalRef", "status"],
+        "title": "RunDetails"
+      },
+      "StateTaxesResponse": {
+        "properties": {
+          "taxState": {
+            "$ref": "#/components/schemas/USStates",
+            "default": "Pennsylvania"
+          },
+          "stateIncomeTax": {
+            "type": "string",
+            "title": "Stateincometax",
+            "default": "0"
+          },
+          "localServiceTax": { "type": "string", "title": "Localservicetax" },
+          "earnedIncomeTax": { "type": "string", "title": "Earnedincometax" },
+          "stateUnemploymentInsurance": {
+            "type": "string",
+            "title": "Stateunemploymentinsurance"
+          },
+          "additionalStateWithholding": {
+            "type": "string",
+            "title": "Additionalstatewithholding"
+          },
+          "totalStateTaxes": {
+            "type": "string",
+            "title": "Totalstatetaxes",
+            "default": "0"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "StateTaxesResponse"
+      },
+      "StudentLoanPlanType": {
+        "type": "string",
+        "enum": ["Plan1", "Plan2", "Plan4"],
+        "title": "StudentLoanPlanType",
+        "description": "Types of student loan plans"
+      },
+      "SupportedHealthInsurers": {
+        "type": "string",
+        "enum": ["AOK", "BARMER", "DAK", "IKK", "TK", "OTHER"],
+        "title": "SupportedHealthInsurers",
+        "description": "Supported health insurers"
+      },
+      "TaxAttributes": {
+        "properties": {
+          "taxClass": {
+            "$ref": "#/components/schemas/TaxClassType",
+            "description": "Steuerklasse (STKL) - Tax class"
+          },
+          "isFactor": {
+            "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+            "title": "Isfactor",
+            "description": "Faktorverfahren (AF) - Factor procedure flag (only for tax class IV)",
+            "default": false
+          },
+          "factor": {
+            "anyOf": [
+              {
+                "anyOf": [
+                  {
+                    "type": "number",
+                    "multipleOf": 0.001,
+                    "exclusiveMaximum": 1.0,
+                    "minimum": 0.001
+                  },
+                  { "type": "string" }
+                ],
+                "type": "number",
+                "multipleOf": 0.001,
+                "exclusiveMaximum": 1.0,
+                "minimum": 0.001
+              },
+              { "type": "null" }
+            ],
+            "title": "Factor",
+            "description": "Faktor (F) - Factor for factor procedure"
+          },
+          "childAllowances": {
+            "anyOf": [
+              {
+                "type": "number",
+                "multipleOf": 0.5,
+                "maximum": 9.0,
+                "minimum": 0.0
+              },
+              { "type": "string" }
+            ],
+            "type": "number",
+            "multipleOf": 0.5,
+            "maximum": 9.0,
+            "minimum": 0.0,
+            "title": "Childallowances",
+            "description": "Kinderfreibeträge (ZKF) - Number of child allowances (decimal place for shared allowances)",
+            "default": "0"
+          },
+          "isChurchMember": {
+            "type": "boolean",
+            "title": "Ischurchmember",
+            "description": "Religionsgemeinschaft (R) - Church membership",
+            "default": false
+          },
+          "taxState": {
+            "anyOf": [
+              { "$ref": "#/components/schemas/GermanStates" },
+              { "type": "null" }
+            ],
+            "description": "Bundesländer - Residency state",
+            "default": "Berlin"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["taxClass"],
+        "title": "TaxAttributes"
+      },
+      "TaxClass": {
+        "type": "string",
+        "enum": ["1", "2", "3", "4", "5", "6"],
+        "title": "TaxClass",
+        "description": "Steuerklasse (STKL)"
+      },
+      "TaxClassType": {
+        "type": "string",
+        "enum": ["1", "2", "3", "4", "5", "6"],
+        "title": "TaxClassType",
+        "description": "Steuerklasse (STKL)"
+      },
+      "TaxInfo": {
+        "properties": {
+          "filingStatus": {
+            "anyOf": [
+              { "$ref": "#/components/schemas/FilingStatus" },
+              { "type": "null" }
+            ],
+            "description": "Employee's tax filing status",
+            "default": "Single"
+          },
+          "usePre2020W4": {
+            "type": "boolean",
+            "const": false,
+            "title": "Usepre2020W4"
+          },
+          "isNonresidentAlien": {
+            "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+            "title": "Isnonresidentalien",
+            "description": "Are you a Non Resident Alien?",
+            "default": false
+          },
+          "workTwoJobs": {
+            "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+            "title": "Worktwojobs",
+            "description": "Working two jobs (from W-4 Step 2(c))",
+            "default": false
+          },
+          "dependentAmount": {
+            "anyOf": [
+              { "type": "integer", "minimum": 0.0 },
+              { "type": "null" }
+            ],
+            "title": "Dependentamount",
+            "description": "Dollar amount for dependents (from W-4 Step 3)",
+            "default": 0
+          },
+          "otherIncome": {
+            "anyOf": [
+              { "type": "number", "minimum": 0.0 },
+              { "type": "string" },
+              { "type": "null" }
+            ],
+            "title": "Otherincome",
+            "description": "Other income not from jobs (from W-4 Step 4(a))",
+            "default": "0.00"
+          },
+          "deductions": {
+            "anyOf": [
+              { "type": "number", "minimum": 0.0 },
+              { "type": "string" },
+              { "type": "null" }
+            ],
+            "title": "Deductions",
+            "description": "Deductions other than standard deduction (from W-4 Step 4(b))",
+            "default": "0.00"
+          },
+          "additionalWithholding": {
+            "anyOf": [
+              { "type": "number", "minimum": 0.0 },
+              { "type": "string" },
+              { "type": "null" }
+            ],
+            "title": "Additionalwithholding",
+            "description": "Additional withholding from each paycheck (from W-4 Step 4(c))",
+            "default": "0.00"
+          },
+          "exemptions": {
+            "anyOf": [
+              { "$ref": "#/components/schemas/Exemptions" },
+              { "type": "null" }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["usePre2020W4"],
+        "title": "TaxInfo"
+      },
+      "TaxesResponse": {
+        "properties": {
+          "federalTaxes": { "type": "string", "title": "Federaltaxes" },
+          "medicareTaxes": {
+            "type": "string",
+            "title": "Medicaretaxes",
+            "default": "0"
+          },
+          "additionalMedicareTaxes": {
+            "type": "string",
+            "title": "Additionalmedicaretaxes",
+            "default": "0"
+          },
+          "socialSecurityTaxes": {
+            "type": "string",
+            "title": "Socialsecuritytaxes",
+            "default": "0"
+          },
+          "stateTaxes": {
+            "anyOf": [
+              { "$ref": "#/components/schemas/StateTaxesResponse" },
+              { "type": "null" }
+            ]
+          },
+          "totalTaxes": {
+            "type": "string",
+            "title": "Totaltaxes",
+            "default": "0"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["federalTaxes", "stateTaxes"],
+        "title": "TaxesResponse"
+      },
+      "UKBusinessType": {
+        "type": "string",
+        "enum": [
+          "Sole Trader",
+          "Partnership",
+          "Limited Company",
+          "Public Limited Company",
+          "Limited Liability Partnership",
+          "Community Interest Company"
+        ],
+        "title": "UKBusinessType"
+      },
+      "UKTaxIdentifier": {
+        "properties": {
+          "country": { "type": "string", "const": "GB", "title": "Country" },
+          "businessType": { "$ref": "#/components/schemas/UKBusinessType" },
+          "payeReferenceNumber": {
+            "type": "string",
+            "title": "Payereferencenumber"
+          },
+          "accountsOfficeReference": {
+            "type": "string",
+            "title": "Accountsofficereference"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "country",
+          "businessType",
+          "payeReferenceNumber",
+          "accountsOfficeReference"
+        ],
+        "title": "UKTaxIdentifier"
+      },
+      "UKTaxInfo": {
+        "properties": {
+          "country": {
+            "type": "string",
+            "const": "UnitedKingdom",
+            "title": "Country",
+            "default": "UnitedKingdom"
+          },
+          "taxIdentifier": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Taxidentifier"
+          },
+          "employeeId": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Employeeid"
+          },
+          "niNumber": {
+            "type": "string",
+            "maxLength": 9,
+            "minLength": 9,
+            "title": "Ninumber"
+          },
+          "niCategory": { "$ref": "#/components/schemas/NICCategory" },
+          "taxCode": { "type": "string", "maxLength": 10, "title": "Taxcode" },
+          "studentLoanType": {
+            "anyOf": [
+              { "$ref": "#/components/schemas/StudentLoanPlanType" },
+              { "type": "null" }
+            ]
+          },
+          "postgraduateLoan": {
+            "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+            "title": "Postgraduateloan",
+            "default": false
+          },
+          "validFrom": {
+            "anyOf": [
+              { "type": "string", "format": "date" },
+              { "type": "null" }
+            ],
+            "title": "Validfrom"
+          },
+          "validTo": {
+            "anyOf": [
+              { "type": "string", "format": "date" },
+              { "type": "null" }
+            ],
+            "title": "Validto"
+          },
+          "p45GrossPay": {
+            "anyOf": [
+              { "type": "number" },
+              { "type": "string" },
+              { "type": "null" }
+            ],
+            "title": "P45Grosspay",
+            "default": "0.00"
+          },
+          "p45TaxAmount": {
+            "anyOf": [
+              { "type": "number" },
+              { "type": "string" },
+              { "type": "null" }
+            ],
+            "title": "P45Taxamount",
+            "default": "0.00"
+          },
+          "p45NetPay": {
+            "anyOf": [
+              { "type": "number" },
+              { "type": "string" },
+              { "type": "null" }
+            ],
+            "title": "P45Netpay",
+            "default": "0.00"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["taxIdentifier", "niNumber", "niCategory", "taxCode"],
+        "title": "UKTaxInfo",
+        "description": "Base model for UK-specific tax information"
+      },
+      "USStates": {
+        "type": "string",
+        "enum": [
+          "Alaska",
+          "Alabama",
+          "Arkansas",
+          "Arizona",
+          "California",
+          "Colorado",
+          "Connecticut",
+          "Delaware",
+          "Florida",
+          "Georgia",
+          "Hawaii",
+          "Iowa",
+          "Idaho",
+          "Illinois",
+          "Indiana",
+          "Kansas",
+          "Kentucky",
+          "Louisiana",
+          "Massachusetts",
+          "Maryland",
+          "Maine",
+          "Michigan",
+          "Minnesota",
+          "Missouri",
+          "Mississippi",
+          "Montana",
+          "North Carolina",
+          "North Dakota",
+          "Nebraska",
+          "New Hampshire",
+          "New Jersey",
+          "New Mexico",
+          "Nevada",
+          "New York",
+          "Ohio",
+          "Oklahoma",
+          "Oregon",
+          "Pennsylvania",
+          "Rhode Island",
+          "South Carolina",
+          "South Dakota",
+          "Tennessee",
+          "Texas",
+          "Utah",
+          "Virginia",
+          "Vermont",
+          "Washington",
+          "Wisconsin",
+          "West Virginia",
+          "District of Columbia",
+          "American Samoa",
+          "Guam GU",
+          "Northern Mariana Islands",
+          "Puerto Rico PR",
+          "U.S. Virgin Islands"
+        ],
+        "title": "USStates"
+      },
+      "USTaxIdentifier": {
+        "properties": {
+          "country": { "type": "string", "const": "US", "title": "Country" },
+          "ein": { "type": "string", "title": "Ein" },
+          "businessType": { "$ref": "#/components/schemas/BusinessType" }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["country", "ein", "businessType"],
+        "title": "USTaxIdentifier"
+      },
+      "USTaxInfo": {
+        "properties": {
+          "country": {
+            "type": "string",
+            "const": "UnitedStates",
+            "title": "Country",
+            "default": "UnitedStates"
+          },
+          "ssn": { "type": "string", "title": "Ssn" }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["ssn"],
+        "title": "USTaxInfo"
+      },
+      "VWL": {
+        "properties": {
+          "employeeContribution": {
+            "anyOf": [
+              { "type": "number", "minimum": 0.0 },
+              { "type": "string" }
+            ],
+            "type": "number",
+            "multipleOf": 0.01,
+            "minimum": 0.0,
+            "title": "Employeecontribution",
+            "description": "VWL AN",
+            "default": "0.00"
+          },
+          "employerContribution": {
+            "anyOf": [
+              { "type": "number", "minimum": 0.0 },
+              { "type": "string" }
+            ],
+            "type": "number",
+            "multipleOf": 0.01,
+            "minimum": 0.0,
+            "title": "Employercontribution",
+            "description": "VWL AG",
+            "default": "0.00"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "VWL"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": { "anyOf": [{ "type": "string" }, { "type": "integer" }] },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": { "type": "string", "title": "Message" },
+          "type": { "type": "string", "title": "Error Type" }
+        },
+        "type": "object",
+        "required": ["loc", "msg", "type"],
+        "title": "ValidationError"
+      },
+      "WorkSiteRequest": {
+        "properties": {
+          "name": { "type": "string", "title": "Name" },
+          "address": { "type": "string", "title": "Address" },
+          "isActive": { "type": "boolean", "title": "Isactive" },
+          "isPrimary": { "type": "boolean", "title": "Isprimary" }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["name", "address", "isActive", "isPrimary"],
+        "title": "WorkSiteRequest"
+      },
+      "WorkSiteResponse": {
+        "properties": {
+          "name": { "type": "string", "title": "Name" },
+          "address": { "type": "string", "title": "Address" },
+          "isActive": { "type": "boolean", "title": "Isactive" },
+          "isPrimary": { "type": "boolean", "title": "Isprimary" },
+          "id": { "type": "string", "title": "Id" },
+          "orgId": { "type": "string", "title": "Orgid" },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "address",
+          "isActive",
+          "isPrimary",
+          "id",
+          "orgId",
+          "createdAt",
+          "updatedAt"
+        ],
+        "title": "WorkSiteResponse"
+      },
+      "payroll__germany__schema__request__Deductions": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              { "$ref": "#/components/schemas/DeductionType" },
+              { "type": "null" }
+            ]
+          },
+          "amount": {
+            "anyOf": [
+              { "type": "number", "minimum": 0.0 },
+              { "type": "string" }
+            ],
+            "type": "number",
+            "multipleOf": 0.01,
+            "minimum": 0.0,
+            "title": "Amount",
+            "description": "Deduction amount (after tax)"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["amount"],
+        "title": "Deductions"
+      },
+      "payroll__germany__schema__request__Earnings": {
+        "properties": {
+          "earningType": {
+            "$ref": "#/components/schemas/payroll__germany__types__EarningType"
+          },
+          "amount": {
+            "anyOf": [
+              { "type": "number", "minimum": 0.0 },
+              { "type": "string" }
+            ],
+            "type": "number",
+            "multipleOf": 0.01,
+            "minimum": 0.0,
+            "title": "Amount",
+            "description": "Earnings amount (taxable gross)"
+          },
+          "earningFrequency": {
+            "anyOf": [
+              { "$ref": "#/components/schemas/PayCycleType-Input" },
+              { "type": "null" }
+            ],
+            "description": "If recurring, specify the frequency",
+            "default": "Month"
+          },
+          "isLumpsum": {
+            "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+            "title": "Islumpsum",
+            "description": "True if onetime (Einmalig). False if recurring (Laufend)",
+            "default": false
+          },
+          "doGrossup": {
+            "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+            "title": "Dogrossup",
+            "description": "True if the amount needs to be grossed up",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["earningType", "amount"],
+        "title": "Earnings"
+      },
+      "payroll__germany__schema__request__Gross": {
+        "properties": {
+          "earnings": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/payroll__germany__schema__request__Earnings"
+                },
+                "type": "array"
+              },
+              { "type": "null" }
+            ],
+            "title": "Earnings"
+          },
+          "benefits": {
+            "anyOf": [
+              {
+                "items": {
+                  "oneOf": [
+                    { "$ref": "#/components/schemas/Car" },
+                    { "$ref": "#/components/schemas/NonCarBenefits" }
+                  ],
+                  "discriminator": {
+                    "propertyName": "name",
+                    "mapping": {
+                      "Allowances": "#/components/schemas/NonCarBenefits",
+                      "Capital-forming": "#/components/schemas/NonCarBenefits",
+                      "Company Car": "#/components/schemas/Car",
+                      "Company Pension": "#/components/schemas/NonCarBenefits",
+                      "Gym": "#/components/schemas/NonCarBenefits",
+                      "Meal Plan": "#/components/schemas/NonCarBenefits",
+                      "Other": "#/components/schemas/NonCarBenefits"
+                    }
+                  }
+                },
+                "type": "array"
+              },
+              { "type": "null" }
+            ],
+            "title": "Benefits"
+          },
+          "deductions": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/payroll__germany__schema__request__Deductions"
+                },
+                "type": "array"
+              },
+              { "type": "null" }
+            ],
+            "title": "Deductions"
+          },
+          "reimbursements": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/payroll__germany__schema__request__Reimbursement"
+                },
+                "type": "array"
+              },
+              { "type": "null" }
+            ],
+            "title": "Reimbursements"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["earnings", "benefits"],
+        "title": "Gross"
+      },
+      "payroll__germany__schema__request__PayrollRequest": {
+        "properties": {
+          "payDate": {
+            "type": "string",
+            "format": "date",
+            "title": "Paydate",
+            "description": "Payment Date for this payroll"
+          },
+          "payCycle": { "$ref": "#/components/schemas/PayCycleType-Input" },
+          "payrollGroup": {
+            "items": {
+              "$ref": "#/components/schemas/payroll__germany__schema__request__PayrollRequestBase"
+            },
+            "type": "array",
+            "title": "Payrollgroup"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["payCycle", "payrollGroup"],
+        "title": "PayrollRequest",
+        "description": "Input parameters according to PAP2025",
+        "examples": [
+          {
+            "payCycle": "Month",
+            "payrollGroup": [
+              {
+                "employeeDetails": { "employeeId": 100, "yearOfBirth": 1962 },
+                "insuranceDetails": {
+                  "careInsuranceChildren": 0,
+                  "healthInsuranceType": "Private KV with employer subsidy",
+                  "healthInsurerAgencyCode": "1528962",
+                  "pensionInsuranceType": "Statutory",
+                  "privateInsuranceMonthly": 741.68
+                },
+                "payDetails": {
+                  "benefits": [
+                    {
+                      "additionalPayments": -137.0,
+                      "name": "Company Car",
+                      "privateTrip": 573
+                    },
+                    { "employerShare": 26.6, "name": "Capital-forming" },
+                    { "employeeShare": 1109.24, "name": "Company Pension" }
+                  ],
+                  "deductions": [{ "amount": 100, "name": "Loan Repayment" }],
+                  "earnings": [
+                    {
+                      "amount": 10554.16,
+                      "earningFrequency": "Month",
+                      "earningType": "Salary"
+                    },
+                    {
+                      "amount": 102,
+                      "earningFrequency": "Month",
+                      "earningType": "Allowances"
+                    },
+                    {
+                      "amount": 1.28,
+                      "earningFrequency": "Month",
+                      "earningType": "Other"
+                    }
+                  ],
+                  "reimbursements": [{ "amount": 1000, "name": "Trip to USA" }]
+                },
+                "taxAttributes": {
+                  "childAllowances": 0,
+                  "isChurchMember": false,
+                  "taxClass": "3",
+                  "taxState": "Berlin"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "payroll__germany__schema__request__PayrollRequestBase": {
+        "properties": {
+          "employeeDetails": { "$ref": "#/components/schemas/EmployeeDetails" },
+          "taxAttributes": { "$ref": "#/components/schemas/TaxAttributes" },
+          "insuranceDetails": {
+            "$ref": "#/components/schemas/InsuranceDetails"
+          },
+          "payDetails": {
+            "$ref": "#/components/schemas/payroll__germany__schema__request__Gross"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "employeeDetails",
+          "taxAttributes",
+          "insuranceDetails",
+          "payDetails"
+        ],
+        "title": "PayrollRequestBase",
+        "description": "Input parameters"
+      },
+      "payroll__germany__schema__request__Reimbursement": {
+        "properties": {
+          "name": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Name"
+          },
+          "amount": {
+            "anyOf": [
+              { "type": "number", "minimum": 0.0 },
+              { "type": "string" }
+            ],
+            "type": "number",
+            "multipleOf": 0.01,
+            "minimum": 0.0,
+            "title": "Amount",
+            "description": "Reimbursement amount (after tax)"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["name", "amount"],
+        "title": "Reimbursement"
+      },
+      "payroll__germany__schemas__BaseSalary": {
+        "properties": {
+          "amount": {
+            "anyOf": [
+              {
+                "anyOf": [
+                  {
+                    "type": "number",
+                    "exclusiveMaximum": 1000000000.0,
+                    "minimum": 0.0
+                  },
+                  { "type": "string" }
+                ],
+                "type": "number",
+                "multipleOf": 0.01,
+                "minimum": 0.0
+              },
+              { "type": "null" }
+            ],
+            "title": "Amount",
+            "description": "Gross pay amount",
+            "default": "0.00"
+          },
+          "paymentPeriod": {
+            "$ref": "#/components/schemas/payroll__germany__schemas__PaymentPeriod",
+            "description": "Lohnzahlungszeitraum (LZZ) - 1=Year, 2=Month, 3=Week, 4=Day"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["paymentPeriod"],
+        "title": "BaseSalary"
+      },
+      "payroll__germany__schemas__Earnings": {
+        "properties": {
+          "regularWages": {
+            "$ref": "#/components/schemas/payroll__germany__schemas__BaseSalary"
+          },
+          "onetimeIncome": {
+            "anyOf": [
+              {
+                "anyOf": [
+                  { "type": "number", "minimum": 0.0 },
+                  { "type": "string" }
+                ],
+                "type": "number",
+                "multipleOf": 0.01,
+                "minimum": 0.0
+              },
+              { "type": "null" }
+            ],
+            "title": "Onetimeincome",
+            "description": "Einmalzahlungen",
+            "default": "0.00"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["regularWages"],
+        "title": "Earnings"
+      },
+      "payroll__germany__schemas__PaymentPeriod": {
+        "type": "string",
+        "enum": ["Year", "Month", "Week", "Day"],
+        "title": "PaymentPeriod",
+        "description": "Lohnzahlungszeitraum (LZZ)"
+      },
+      "payroll__germany__schemas__PayrollRequestBase": {
+        "properties": {
+          "employeeId": {
+            "type": "integer",
+            "title": "Employeeid",
+            "description": "Mitarbeiterkennzeichen - Employee identification number"
+          },
+          "yearOfBirth": {
+            "type": "integer",
+            "maximum": 2025.0,
+            "minimum": 1850.0,
+            "title": "Yearofbirth",
+            "description": "Geburtsjahr - Birth Year to check eligibility for Altersentlastungsbetrag"
+          },
+          "grossWages": { "$ref": "#/components/schemas/GrossWages" },
+          "taxClass": {
+            "$ref": "#/components/schemas/TaxClass",
+            "description": "Steuerklasse (STKL) - Tax class"
+          },
+          "pensionInsuranceType": {
+            "$ref": "#/components/schemas/PensionInsuranceType",
+            "description": "Rentenversicherung (KRV) - Pension insurance type"
+          },
+          "healthInsuranceType": {
+            "$ref": "#/components/schemas/HealthInsuranceType",
+            "description": "Krankenversicherung (PKV) - Health insurance type"
+          },
+          "healthInsurer": {
+            "anyOf": [
+              { "$ref": "#/components/schemas/SupportedHealthInsurers" },
+              { "type": "null" }
+            ],
+            "description": "Health insurer"
+          },
+          "healthInsurerAgencyCode": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Healthinsureragencycode",
+            "description": "Krankenversicherungscode (KVK) - Health insurer agency code"
+          },
+          "childAllowances": {
+            "anyOf": [
+              {
+                "type": "number",
+                "multipleOf": 0.5,
+                "maximum": 9.0,
+                "minimum": 0.0
+              },
+              { "type": "string" }
+            ],
+            "title": "Childallowances",
+            "description": "Kinderfreibeträge (ZKF) - Number of child allowances (decimal place for shared allowances)",
+            "default": 0.0
+          },
+          "isChurchMember": {
+            "type": "boolean",
+            "title": "Ischurchmember",
+            "description": "Religionsgemeinschaft (R) - Church membership",
+            "default": false
+          },
+          "churchTaxState": {
+            "anyOf": [
+              { "$ref": "#/components/schemas/GermanStates" },
+              { "type": "null" }
+            ],
+            "description": "Religionsgemeinschaft (R) - Church membership state"
+          },
+          "inSaxony": {
+            "type": "boolean",
+            "title": "Insaxony",
+            "description": "Sachsen-Indikator (PVS) - Special case for Saxony care insurance (1=yes)",
+            "default": false
+          },
+          "careInsuranceChildren": {
+            "type": "integer",
+            "maximum": 5.0,
+            "minimum": 0.0,
+            "title": "Careinsurancechildren",
+            "description": "Anzahl Kinder Pflegeversicherung (PVA) - Number of children for care insurance discount (0-5), choose 5 for 5 or more",
+            "default": 0
+          },
+          "isFactor": {
+            "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+            "title": "Isfactor",
+            "description": "Faktorverfahren (AF) - Factor procedure flag (only for tax class IV)",
+            "default": false
+          },
+          "factor": {
+            "anyOf": [
+              {
+                "type": "number",
+                "multipleOf": 0.001,
+                "exclusiveMaximum": 1.0,
+                "minimum": 0.001
+              },
+              { "type": "string" },
+              { "type": "null" }
+            ],
+            "title": "Factor",
+            "description": "Faktor (F) - Factor for factor procedure"
+          },
+          "privateInsuranceMonthly": {
+            "anyOf": [
+              { "type": "number" },
+              { "type": "string" },
+              { "type": "null" }
+            ],
+            "title": "Privateinsurancemonthly",
+            "description": "Private Krankenversicherung (PKPV) - Monthly private health/care insurance contribution",
+            "default": 0
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "employeeId",
+          "yearOfBirth",
+          "grossWages",
+          "taxClass",
+          "pensionInsuranceType",
+          "healthInsuranceType"
+        ],
+        "title": "PayrollRequestBase",
+        "description": "Input parameters according to PAP2025"
+      },
+      "payroll__germany__types__EarningType": {
+        "type": "string",
+        "enum": ["Salary", "Commissions", "Bonus", "Allowances", "Other"],
+        "title": "EarningType"
+      },
+      "payroll__uk__schema__request__Benefits": {
+        "properties": {
+          "name": { "$ref": "#/components/schemas/BenefitType" },
+          "amount": {
+            "anyOf": [
+              { "type": "number", "minimum": 0.0 },
+              { "type": "string" },
+              { "type": "null" }
+            ],
+            "title": "Amount",
+            "description": "Amount of benefit",
+            "default": "0.00"
+          },
+          "makeGoodAmount": {
+            "anyOf": [
+              { "type": "number", "minimum": 0.0 },
+              { "type": "string" },
+              { "type": "null" }
+            ],
+            "title": "Makegoodamount",
+            "description": "Amount paid by employee for the benefit",
+            "default": "0.00"
+          },
+          "foregoneAmount": {
+            "anyOf": [
+              { "type": "number", "minimum": 0.0 },
+              { "type": "string" },
+              { "type": "null" }
+            ],
+            "title": "Foregoneamount",
+            "description": "If subject to OpRa, amount foregone",
+            "default": "0.00"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["name"],
+        "title": "Benefits"
+      },
+      "payroll__uk__schema__request__Deductions": {
+        "properties": {
+          "name": { "type": "string", "title": "Name" },
+          "amount": {
+            "anyOf": [
+              { "type": "number", "minimum": 0.0 },
+              { "type": "string" }
+            ],
+            "title": "Amount"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["name", "amount"],
+        "title": "Deductions"
+      },
+      "payroll__uk__schema__request__Earnings": {
+        "properties": {
+          "earningType": {
+            "$ref": "#/components/schemas/payroll__uk__uktypes__EarningType"
+          },
+          "amount": {
+            "anyOf": [
+              { "type": "number", "minimum": 0.0 },
+              { "type": "string" }
+            ],
+            "title": "Amount",
+            "description": "Earnings amount (taxable gross)"
+          },
+          "earningFrequency": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/payroll__uk__uktypes__PaymentPeriod"
+              },
+              { "type": "null" }
+            ],
+            "description": "If recurring, specify the frequency",
+            "default": "month"
+          },
+          "isLumpsum": {
+            "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+            "title": "Islumpsum",
+            "description": "True if onetime. Defaults to False",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["earningType", "amount"],
+        "title": "Earnings"
+      },
+      "payroll__uk__schema__request__Gross": {
+        "properties": {
+          "earnings": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/payroll__uk__schema__request__Earnings"
+                },
+                "type": "array"
+              },
+              { "type": "null" }
+            ],
+            "title": "Earnings"
+          },
+          "benefits": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/payroll__uk__schema__request__Benefits"
+                },
+                "type": "array"
+              },
+              { "type": "null" }
+            ],
+            "title": "Benefits"
+          },
+          "deductions": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/payroll__uk__schema__request__Deductions"
+                },
+                "type": "array"
+              },
+              { "type": "null" }
+            ],
+            "title": "Deductions"
+          },
+          "reimbursements": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/payroll__uk__schema__request__Reimbursement"
+                },
+                "type": "array"
+              },
+              { "type": "null" }
+            ],
+            "title": "Reimbursements"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["earnings", "benefits"],
+        "title": "Gross"
+      },
+      "payroll__uk__schema__request__PayrollRequest": {
+        "properties": {
+          "payDate": {
+            "type": "string",
+            "format": "date",
+            "title": "Paydate",
+            "description": "Payment Date for this payroll"
+          },
+          "payCycle": {
+            "$ref": "#/components/schemas/payroll__uk__uktypes__PaymentPeriod",
+            "description": ""
+          },
+          "externalRef": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Externalref",
+            "description": "External reference for payroll run"
+          },
+          "payrollGroup": {
+            "items": {
+              "$ref": "#/components/schemas/payroll__uk__schema__request__PayrollRequestBase"
+            },
+            "type": "array",
+            "title": "Payrollgroup"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["payCycle", "payrollGroup"],
+        "title": "PayrollRequest",
+        "description": "Input parameters",
+        "examples": [
+          {
+            "payCycle": "month",
+            "payDate": "2024-06-15",
+            "payrollGroup": [
+              {
+                "employeeId": 12345,
+                "nationalInsuranceCategory": "A",
+                "payDetails": {
+                  "benefits": [
+                    {
+                      "amount": 450.0,
+                      "makeGoodAmount": 100.0,
+                      "name": "Company Car"
+                    },
+                    { "amount": 125.5, "name": "Medical Insurance" },
+                    {
+                      "amount": 50.0,
+                      "foregoneAmount": 0.0,
+                      "makeGoodAmount": 25.0,
+                      "name": "Professional Subscription"
+                    },
+                    {
+                      "amount": 350.0,
+                      "foregoneAmount": 500.0,
+                      "makeGoodAmount": 0.0,
+                      "name": "Other Benefit"
+                    }
+                  ],
+                  "deductions": [
+                    { "deductionType": "Student Loan", "loanType": "Plan1" },
+                    { "deductionType": "Postgraduate Loan" },
+                    {
+                      "amount": 200,
+                      "deductionType": "Other",
+                      "name": "Withdrawal"
+                    }
+                  ],
+                  "earnings": [
+                    {
+                      "amount": 36000.0,
+                      "earningFrequency": "year",
+                      "earningType": "Salary",
+                      "isLumpsum": false
+                    },
+                    {
+                      "amount": 1000.0,
+                      "earningFrequency": "year",
+                      "earningType": "Bonus",
+                      "isLumpsum": true
+                    }
+                  ],
+                  "reimbursements": [
+                    { "amount": 275.5, "name": "Business Travel" }
+                  ]
+                },
+                "taxCode": "1257L"
+              }
+            ]
+          }
+        ]
+      },
+      "payroll__uk__schema__request__PayrollRequestBase": {
+        "properties": {
+          "employeeId": {
+            "type": "string",
+            "title": "Employeeid",
+            "description": "Employee identification number"
+          },
+          "payDetails": {
+            "$ref": "#/components/schemas/payroll__uk__schema__request__Gross"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["employeeId", "payDetails"],
+        "title": "PayrollRequestBase",
+        "description": "Input parameters"
+      },
+      "payroll__uk__schema__request__Reimbursement": {
+        "properties": {
+          "name": { "type": "string", "title": "Name" },
+          "amount": {
+            "anyOf": [
+              { "type": "number", "minimum": 0.0 },
+              { "type": "string" }
+            ],
+            "title": "Amount"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["name", "amount"],
+        "title": "Reimbursement"
+      },
+      "payroll__uk__uktypes__EarningType": {
+        "type": "string",
+        "enum": ["Salary", "Commissions", "Bonus", "Allowances", "Other"],
+        "title": "EarningType"
+      },
+      "payroll__uk__uktypes__PaymentPeriod": {
+        "type": "string",
+        "enum": ["year", "month", "week"],
+        "title": "PaymentPeriod",
+        "description": "Payment Period"
+      },
+      "payroll__usa__schemas__BaseSalary": {
+        "properties": {
+          "amount": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMaximum": 1000000000.0,
+                "minimum": 0.0
+              },
+              { "type": "string" },
+              { "type": "null" }
+            ],
+            "title": "Amount",
+            "description": "Gross pay amount",
+            "default": "0.00"
+          },
+          "frequency": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/payroll__usa__schemas__EarningType"
+              },
+              { "type": "null" }
+            ],
+            "description": "Annual or per pay period",
+            "default": "annual"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "BaseSalary"
+      },
+      "payroll__usa__schemas__Benefits": {
+        "properties": {
+          "medical": {
+            "anyOf": [
+              { "type": "number", "minimum": 0.0 },
+              { "type": "string" },
+              { "type": "null" }
+            ],
+            "title": "Medical",
+            "description": "Medical Insurance deduction per pay period",
+            "default": "0.00"
+          },
+          "dental": {
+            "anyOf": [
+              { "type": "number", "minimum": 0.0 },
+              { "type": "string" },
+              { "type": "null" }
+            ],
+            "title": "Dental",
+            "description": "Dental Insurance deduction per pay period",
+            "default": "0.00"
+          },
+          "vision": {
+            "anyOf": [
+              { "type": "number", "minimum": 0.0 },
+              { "type": "string" },
+              { "type": "null" }
+            ],
+            "title": "Vision",
+            "description": "Vision Insurance deduction per pay period",
+            "default": "0.00"
+          },
+          "healthcareFSA": {
+            "anyOf": [
+              { "type": "number", "minimum": 0.0 },
+              { "type": "string" },
+              { "type": "null" }
+            ],
+            "title": "Healthcarefsa",
+            "description": "FSA contribution per pay period",
+            "default": "0.00"
+          },
+          "dependentFSA": {
+            "anyOf": [
+              { "type": "number", "minimum": 0.0 },
+              { "type": "string" },
+              { "type": "null" }
+            ],
+            "title": "Dependentfsa",
+            "description": "Dependent FSA contribution per pay period",
+            "default": "0.00"
+          },
+          "healthcareHSA": {
+            "anyOf": [
+              { "type": "number", "minimum": 0.0 },
+              { "type": "string" },
+              { "type": "null" }
+            ],
+            "title": "Healthcarehsa",
+            "description": "HSA contribution per pay period",
+            "default": "0.00"
+          },
+          "retirement": {
+            "anyOf": [
+              {
+                "items": { "$ref": "#/components/schemas/Retirement" },
+                "type": "array"
+              },
+              { "type": "null" }
+            ],
+            "title": "Retirement",
+            "default": [
+              { "type": "401(k)", "amountType": "fixed", "amount": "0.00" }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "Benefits"
+      },
+      "payroll__usa__schemas__EarningType": {
+        "type": "string",
+        "enum": ["annual", "per pay period"],
+        "title": "EarningType"
       }
     },
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer"
-      }
-    }
+    "securitySchemes": { "BearerToken": { "type": "http", "scheme": "bearer" } }
   }
 }
