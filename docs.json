@@ -24,15 +24,24 @@
         "groups": [
           {
             "group": "Core",
-            "pages": [
-              "api-reference/generated/core/create-orgs",
-              "api-reference/generated/core/list-orgs",
-              "api-reference/generated/core/get-org",
-              "api-reference/generated/core/create-employees",
-              "api-reference/generated/core/list-employees",
-              "api-reference/generated/core/get-employee"
-
-            ]
+             "pages": [
+                {
+                  "group": "Organizations",
+                  "pages": [
+                    "api-reference/generated/core/create-orgs",
+                    "api-reference/generated/core/list-orgs",
+                    "api-reference/generated/core/get-org"
+                  ]
+                },
+                {
+                  "group": "Employees",
+                  "pages": [
+                    "api-reference/generated/core/create-employees",
+                    "api-reference/generated/core/list-employees",
+                    "api-reference/generated/core/get-employee"
+                  ]
+                }
+              ]
           },
           {
             "group": "Germany Paycheck Calculator",
