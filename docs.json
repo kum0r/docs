@@ -68,8 +68,8 @@
     ]
   },
   "logo": {
-    "light": "/logo/intermezzo_light_text.svg",
-    "dark": "/logo/intermezzo_dark_text.svg"
+    "light": "/logo/intermezzo_light.svg",
+    "dark": "/logo/intermezzo_dark.svg"
   },
   "navbar": {
     "links": [
