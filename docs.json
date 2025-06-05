@@ -1,13 +1,13 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
-  "name": "Mint Starter Kit",
+  "theme": "palm",
+  "name": "Intermezzo Docs",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#329100",
+    "light": "#43C200",
+    "dark": "#329100"
   },
-  "favicon": "/favicon.svg",
+  "favicon": "/im-favicon.png",
   "navigation": {
     "tabs": [
       {
@@ -15,22 +15,7 @@
         "groups": [
           {
             "group": "Get Started",
-            "pages": [
-              "index",
-              "quickstart",
-              "development"
-            ]
-          },
-          {
-            "group": "Essentials",
-            "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/settings",
-              "essentials/navigation",
-              "essentials/reusable-snippets"
-            ]
+            "pages": ["index", "auth", "requestid"]
           }
         ]
       },
@@ -38,70 +23,56 @@
         "tab": "API Reference",
         "groups": [
           {
-            "group": "API Documentation",
-            "pages": ["api-reference/introduction"]
-          },
-          {
-            "group": "Endpoint Documentation",
+            "group": "Core",
             "pages": [
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/read",
-              "api-reference/endpoint/update",
-              "api-reference/endpoint/delete"
+              "api-reference/generated/core/create-orgs",
+              "api-reference/generated/core/list-orgs",
+              "api-reference/generated/core/get-org",
+              "api-reference/generated/core/create-employees",
+              "api-reference/generated/core/list-employees",
+              "api-reference/generated/core/get-employee"
+
             ]
           },
           {
-            "group": "Endpoints",
-            "openapi": {
-              "source": "api-reference/openapi.json",
-              "directory": "api-reference"
-            }
+            "group": "Germany Paycheck Calculator",
+            "pages": [
+              "api-reference/generated/germany-paycheck-calculator/list-insurance-agencies",
+              "api-reference/generated/germany-paycheck-calculator/new-payroll",
+              "api-reference/generated/germany-paycheck-calculator/gtn"
+            ]
+          },
+          {
+            "group": "UK Paycheck Calculator",
+            "pages": [
+              "api-reference/generated/uk-paycheck-calculator/new-payroll",
+              "api-reference/generated/uk-paycheck-calculator/update-payroll",
+              "api-reference/generated/core/approve-payroll"
+            ]
+          },
+          {
+            "group": "USA Paycheck Calculator",
+            "pages": ["api-reference/generated/usa-paycheck-calculator/gtn"]
           }
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Community",
-          "href": "https://mintlify.com/community",
-          "icon": "slack"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
-    }
+    ]
   },
   "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
+    "light": "/logo/intermezzo_light_text.svg",
+    "dark": "/logo/intermezzo_dark_text.svg"
   },
   "navbar": {
     "links": [
       {
         "label": "Support",
-        "href": "mailto:hi@mintlify.com"
+        "href": "mailto:support@intermezzo.ai"
       }
     ],
     "primary": {
       "type": "button",
       "label": "Dashboard",
       "href": "https://dashboard.mintlify.com"
-    }
-  },
-  "footer": {
-    "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
     }
   }
 }

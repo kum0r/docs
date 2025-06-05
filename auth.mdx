@@ -1,0 +1,43 @@
+---
+title: 'Authentication'
+description: 'Identity and Access Management'
+---
+
+<Tip>
+  API access requires obtaining OAuth client credentials from Intermezzo.
+  Please [contact us](mailto:support@intermezzo.ai) to get your credentials.
+</Tip>
+
+## Authentication
+Intermezzo API uses OAuth 2 access tokens to authenticate requests. The token is passed in the Authorization header of the request.
+```bash
+Authorization: Bearer <token>
+```
+
+All API requests must be made over HTTPS. Calls made over plain HTTP will fail. API requests without authentication will also fail.
+
+# Token Request
+To obtain an access token, make a POST request to the token endpoint with your client credentials.
+ <Warning>
+Your `client_id` and `client_secret` provide access to all your data, so keep them secure. Do not share them publicly by checking them into GitHub or client side code.
+</Warning>
+<CodeGroup>
+```bash Request
+curl -X POST https://admirable-hymn-72-staging.authkit.app/oauth2/token \
+  -d "client_id=client_01JP8BD0CZ401TDF9X54NT5ZEK" \
+  -d "client_secret=1eaaf7a47948398d89e2b07dce912b6a9c0282aa20e88c026fcb42fd6b06b73e" \
+  -d "grant_type=client_credentials"
+```
+
+```json Response
+{
+  "iss": "https://<subdomain>.authkit.app",
+  "aud": "client_123456789",
+  "sub": "user_01JQ0E27VT3MH79RY0FVA4QBP9",
+  "sid": "app_consent_01JQ0E27WE4K1RCMH7Q094M1GJ",
+  "jti": "01JQ0E27ZXE4XNHVP870S6PWYN",
+  "exp": 1742698034,
+  "iat": 1742697734
+}
+```
+</CodeGroup>
