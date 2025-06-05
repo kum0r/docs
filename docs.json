@@ -3,9 +3,9 @@
   "theme": "palm",
   "name": "Intermezzo Docs",
   "colors": {
-    "primary": "#329100",
-    "light": "#43C200",
-    "dark": "#329100"
+    "primary": "#7c39ed",
+    "light": "#a67cf0",
+    "dark": "#7c39ed"
   },
   "favicon": "/im-favicon.png",
   "navigation": {
