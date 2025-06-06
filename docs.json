@@ -77,11 +77,6 @@
         "label": "Support",
         "href": "mailto:support@intermezzo.ai"
       }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
-    }
+    ]
   }
 }
