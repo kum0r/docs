@@ -1,0 +1,131 @@
+---
+title: 'Pagination'
+description: 'Paginate through large result sets efficiently'
+---
+
+<Tip>
+  All list endpoints support pagination to help manage large datasets.
+  Use pagination parameters to control the number of results and navigate through pages.
+</Tip>
+
+## Overview
+The Intermezzo API uses cursor-based pagination for list endpoints to efficiently handle large result sets. Pagination parameters are passed as query parameters in your requests.
+
+## Pagination Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `page` | integer | 1 | Page number (minimum: 1) |
+| `size` | integer | 10 | Items per page (range: 1-100) |
+| `sort_by` | string | null | Field to sort results by |
+| `sort_order` | string | "asc" | Sort order: "asc" or "desc" |
+
+<Warning>
+The maximum page size is 100 items. Requests with `size` greater than 100 will return an error.
+</Warning>
+
+## Making Paginated Requests
+
+<CodeGroup>
+```bash Basic Pagination
+curl -X GET "https://api.intermezzo.ai/v1/resources?page=1&size=20" \
+  -H "Authorization: Bearer <token>"
+```
+
+```bash With Sorting
+curl -X GET "https://api.intermezzo.ai/v1/resources?page=2&size=25&sort_by=created_at&sort_order=desc" \
+  -H "Authorization: Bearer <token>"
+```
+
+```json Response
+{
+  "items": [
+    {
+      "id": "resource_123",
+      "name": "Example Resource",
+      "created_at": "2024-01-15T10:30:00Z"
+    },
+    {
+      "id": "resource_124",
+      "name": "Another Resource",
+      "created_at": "2024-01-14T15:45:00Z"
+    }
+  ],
+  "meta": {
+    "total": 150,
+    "page": 2,
+    "size": 25,
+    "pages": 6,
+    "has_next": true,
+    "has_prev": true
+  }
+}
+```
+</CodeGroup>
+
+## Response Structure
+
+All paginated responses include two main sections:
+
+### items
+An array containing the actual data for the current page.
+
+### meta
+Pagination metadata containing:
+- `total`: Total number of items across all pages
+- `page`: Current page number
+- `size`: Number of items per page
+- `pages`: Total number of pages
+- `has_next`: Boolean indicating if there's a next page
+- `has_prev`: Boolean indicating if there's a previous page
+
+## Advanced Filtering
+
+You can combine pagination with search and filtering capabilities:
+
+<CodeGroup>
+```bash Search with Pagination
+curl -X GET "https://api.intermezzo.ai/v1/resources?page=1&size=10&search=query&search_fields=name,description" \
+  -H "Authorization: Bearer <token>"
+```
+
+```bash Include Relations
+curl -X GET "https://api.intermezzo.ai/v1/resources?page=1&size=10&include=author,tags" \
+  -H "Authorization: Bearer <token>"
+```
+</CodeGroup>
+
+## Best Practices
+
+<Tip>
+- Start with smaller page sizes (10-25) and increase as needed
+- Always check `has_next` before requesting the next page
+- Use sorting to ensure consistent pagination results
+- Cache pagination metadata to reduce API calls
+</Tip>
+
+## Error Handling
+
+The API will return appropriate errors for invalid pagination parameters:
+
+```json Invalid Page Size
+{
+  "error": "validation_error",
+  "message": "size must be between 1 and 100",
+  "details": {
+    "field": "size",
+    "value": 150
+  }
+}
+```
+
+```json Invalid Sort Order
+{
+  "error": "validation_error",
+  "message": "sort_order must be 'asc' or 'desc'",
+  "details": {
+    "field": "sort_order",
+    "value": "invalid"
+  }
+}
+```

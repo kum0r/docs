@@ -1,15 +1,17 @@
 ---
-title: 'Authentication'
-description: 'Identity and Access Management'
+title: "Authentication"
+description: "Identity and Access Management"
 ---
 
 <Tip>
-  API access requires obtaining OAuth client credentials from Intermezzo.
-  Please [contact us](mailto:support@intermezzo.ai) to get your credentials.
+  API access requires obtaining OAuth client credentials from Intermezzo. Please
+  [contact us](mailto:support@intermezzo.ai) to get your credentials.
 </Tip>
 
 ## Authentication
+
 Intermezzo API uses OAuth 2 access tokens to authenticate requests. The token is passed in the Authorization header of the request.
+
 ```bash
 Authorization: Bearer <token>
 ```
@@ -17,27 +19,203 @@ Authorization: Bearer <token>
 All API requests must be made over HTTPS. Calls made over plain HTTP will fail. API requests without authentication will also fail.
 
 # Token Request
+
 To obtain an access token, make a POST request to the token endpoint with your client credentials.
+
  <Warning>
 Your `client_id` and `client_secret` provide access to all your data, so keep them secure. Do not share them publicly by checking them into GitHub or client side code.
 </Warning>
 <CodeGroup>
-```bash Request
-curl -X POST https://admirable-hymn-72-staging.authkit.app/oauth2/token \
-  -d "client_id=client_01JP8BD0CZ401TDF9X54NT5ZEK" \
-  -d "client_secret=1eaaf7a47948398d89e2b07dce912b6a9c0282aa20e88c026fcb42fd6b06b73e" \
-  -d "grant_type=client_credentials"
+```bash Production Request
+curl --request POST \
+  --url https://auth.intermezzo.ai/oauth/token \
+  --header 'content-type: application/json' \
+  --data '{
+    "client_id":"RFWrUzk93pUmHCNFuKLto2c239LZKoVO",
+    "client_secret":"3wdY-iAPrE8LcYo2X_NhJh38-TemqyRcpGe31LPX9SaGD4HEg6btb30p9b9ddv2C",
+    "audience":"https://api.intermezzo.ai",
+    "grant_type":"client_credentials"
+  }'
+```
+
+```bash Sandbox Request
+curl --request POST \
+  --url https://auth-sandbox.intermezzo.ai/oauth/token \
+  --header 'content-type: application/json' \
+  --data '{
+    "client_id":"RFWrUzk93pUmHCNFuKLto2c239LZKoVO",
+    "client_secret":"3wdY-iAPrE8LcYo2X_NhJh38-TemqyRcpGe31LPX9SaGD4HEg6btb30p9b9ddv2C",
+    "audience":"https://api-sandbox.intermezzo.ai",
+    "grant_type":"client_credentials"
+  }'
 ```
 
 ```json Response
 {
-  "iss": "https://<subdomain>.authkit.app",
-  "aud": "client_123456789",
-  "sub": "user_01JQ0E27VT3MH79RY0FVA4QBP9",
-  "sid": "app_consent_01JQ0E27WE4K1RCMH7Q094M1GJ",
-  "jti": "01JQ0E27ZXE4XNHVP870S6PWYN",
-  "exp": 1742698034,
-  "iat": 1742697734
+  "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6ImF0K2p3dCIsImtpZCI6Ii1rT1pHWHpUUmRFbDZxRUhYazRJNiJ9...",
+  "expires_in": 86400,
+  "token_type": "Bearer"
 }
 ```
+
 </CodeGroup>
+
+## Token Expiration and Renewal
+
+Access tokens issued through the client credentials flow have a limited lifetime. The lifetime is per client credential and set according to the security policy of the client. The client credentials grant does not support refresh tokens by design. The client can use its credentials (client_id and client_secret) to obtain a new access token.
+
+### Getting a New Access Token
+
+When your access token expires, simply make a new request to the token endpoint using the same client credentials
+
+<Tip>
+  Consider implementing automatic token renewal in your application by
+  monitoring the `expires_in` value and requesting a new token before the
+  current one expires if you need longer sessions for machine-to-machine
+  authentication.
+</Tip>
+
+## User Authentication
+
+For applications that need to authenticate end users (not just machine-to-machine communication), Intermezzo provides several OAuth 2.0 flows designed for different application types and security requirements.
+
+### Authorization Code Flow
+
+The Authorization Code Flow is the most secure flow for traditional web applications that can securely store client secrets on the server side.
+
+<CodeGroup>
+```bash Initiate Authorization
+# Redirect user to authorization endpoint
+https://auth.intermezzo.ai/authorize?
+  response_type=code&
+  client_id=your_client_id&
+  redirect_uri=https://yourapp.com/callback&
+  scope=openid profile email offline_access&
+  state=random_state_value
+```
+
+```bash Exchange Code for Tokens
+curl --request POST \
+  --url https://auth.intermezzo.ai/oauth/token \
+  --header 'content-type: application/json' \
+  --data '{
+    "grant_type": "authorization_code",
+    "client_id": "your_client_id",
+    "client_secret": "your_client_secret",
+    "code": "authorization_code_from_callback",
+    "redirect_uri": "https://yourapp.com/callback"
+  }'
+```
+
+```json User Authentication Response
+{
+  "access_token": "eyJhbGciOiJSUzI1NiIs...",
+  "refresh_token": "v1.MjAxNi0wMS0xM...",
+  "id_token": "eyJ0eXAiOiJKV1QiLC...",
+  "token_type": "Bearer",
+  "expires_in": 3600,
+  "scope": "openid profile email"
+}
+```
+
+</CodeGroup>
+
+### Authorization Code Flow with PKCE
+
+For Single-Page Applications (SPAs) and mobile applications that cannot securely store client secrets, use the Authorization Code Flow with Proof Key for Code Exchange (PKCE).
+
+<CodeGroup>
+```bash Generate PKCE Challenge
+# Generate code_verifier (43-128 character random string)
+code_verifier="dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk"
+
+# Create code_challenge (SHA256 hash of verifier, base64url encoded)
+
+code_challenge="E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM"
+
+````
+
+```bash Initiate Authorization with PKCE
+https://auth.intermezzo.ai/authorize?
+  response_type=code&
+  client_id=your_client_id&
+  redirect_uri=https://yourapp.com/callback&
+  scope=openid profile email offline_access&
+  state=random_state_value&
+  code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM&
+  code_challenge_method=S256
+````
+
+```bash Exchange Code with PKCE
+curl --request POST \
+  --url https://auth.intermezzo.ai/oauth/token \
+  --header 'content-type: application/json' \
+  --data '{
+    "grant_type": "authorization_code",
+    "client_id": "your_client_id",
+    "code": "authorization_code_from_callback",
+    "redirect_uri": "https://yourapp.com/callback",
+    "code_verifier": "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk"
+  }'
+```
+
+</CodeGroup>
+
+### Refresh Tokens
+
+User authentication flows support refresh tokens, which allow applications to obtain new access tokens without requiring users to re-authenticate.
+
+<CodeGroup>
+```bash Using Refresh Token
+curl --request POST \
+  --url https://auth.intermezzo.ai/oauth/token \
+  --header 'content-type: application/json' \
+  --data '{
+    "grant_type": "refresh_token",
+    "client_id": "your_client_id",
+    "client_secret": "your_client_secret",
+    "refresh_token": "v1.MjAxNi0wMS0xM..."
+  }'
+```
+
+```json Refresh Response
+{
+  "access_token": "eyJhbGciOiJSUzI1NiIs...",
+  "refresh_token": "v1.MjAxNi0wMS0xM...",
+  "token_type": "Bearer",
+  "expires_in": 3600,
+  "scope": "openid profile email"
+}
+```
+
+</CodeGroup>
+
+<Warning>
+  Refresh tokens are sensitive credentials. Store them securely and never expose
+  them in client-side code or logs. For SPAs, consider using secure storage
+  mechanisms or implementing refresh token rotation.
+</Warning>
+
+### Token Types and Usage
+
+**Access Token**: Used to authenticate API requests. Include in the Authorization header for protected endpoints.
+
+**ID Token**: Contains user identity information. Used by the client application to establish user sessions and display user profile data.
+
+**Refresh Token**: Long-lived credential used to obtain new access tokens. Only available when `offline_access` scope is requested.
+
+### Flow Comparison
+
+| Flow Type                 | Application Type     | Client Secret Required | Refresh Token Support |
+| ------------------------- | -------------------- | ---------------------- | --------------------- |
+| Client Credentials        | Machine-to-machine   | ✅ Yes                 | ❌ No                 |
+| Authorization Code        | Traditional web apps | ✅ Yes                 | ✅ Yes                |
+| Authorization Code + PKCE | SPAs, mobile apps    | ❌ No                  | ✅ Yes                |
+
+### Best Practices
+
+- Always use HTTPS for all authentication endpoints
+- Include the `offline_access` scope to receive refresh tokens
+- Implement proper state parameter validation to prevent CSRF attacks
+- For PKCE, use cryptographically secure random values for code_verifier
+- Store refresh tokens securely and implement proper rotation policies
