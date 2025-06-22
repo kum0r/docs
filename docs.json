@@ -58,10 +58,6 @@
               "api-reference/generated/uk-paycheck-calculator/update-payroll",
               "api-reference/generated/core/approve-payroll"
             ]
-          },
-          {
-            "group": "USA Paycheck Calculator",
-            "pages": ["api-reference/generated/usa-paycheck-calculator/gtn"]
           }
         ]
       }
