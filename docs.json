@@ -29,16 +29,99 @@
                 "group": "Organizations",
                 "pages": [
                   "api-reference/generated/core/create-orgs",
+                  "api-reference/generated/core/get-org",
                   "api-reference/generated/core/list-orgs",
-                  "api-reference/generated/core/get-org"
+                  {
+                    "group": "Worksites",
+                    "pages": [
+                      "api-reference/generated/core/create-worksite",
+                      "api-reference/generated/core/get-worksite",
+                      "api-reference/generated/core/list-worksites",
+                      "api-reference/generated/core/patch-worksite"
+                    ]
+                  },
+                  {
+                    "group": "Contacts",
+                    "pages": [
+                      "api-reference/generated/core/create-contact",
+                      "api-reference/generated/core/list-contacts",
+                      "api-reference/generated/core/patch-contact",
+                      "api-reference/generated/core/create-organization-contact",
+                      "api-reference/generated/core/get-organization-contacts",
+                      "api-reference/generated/core/attach-contacts-to-organization",
+                      "api-reference/generated/core/attach-contact-to-organization",
+                      "api-reference/generated/core/create-worksite-contact",
+                      "api-reference/generated/core/get-worksite-contacts",
+                      "api-reference/generated/core/attach-contacts-to-worksite"
+                    ]
+                  },
+                  {
+                    "group": "Insurance",
+                    "pages": [
+                      "api-reference/generated/core/create-organization-insurance-data",
+                      "api-reference/generated/core/get-organization-insurance-data",
+                      "api-reference/generated/core/update-organization-insurance-data",
+                      "api-reference/generated/core/get-organization-insurance-level-choice-by-id",
+                      "api-reference/generated/core/get-organization-insurance-level-choices",
+                      "api-reference/generated/core/update-organization-insurance-level-choice",
+                      "api-reference/generated/core/create-worksite-insurance-data",
+                      "api-reference/generated/core/get-worksite-insurance-data"
+                    ]
+                  },
+                  {
+                    "group": "Tax Details",
+                    "pages": [
+                      "api-reference/generated/core/create-organization-tax-identifier",
+                      "api-reference/generated/core/get-organization-tax-identifiers",
+                      "api-reference/generated/core/update-organization-tax-identifier",
+                      "api-reference/generated/core/create-worksite-tax-identifier",
+                      "api-reference/generated/core/get-worksite-tax-identifiers"
+                    ]
+                  },
+                  {
+                    "group": "Banking",
+                    "pages": [
+                      "api-reference/generated/core/create-sepa-mandate",
+                      "api-reference/generated/core/get-sepa-mandate",
+                      "api-reference/generated/core/list-sepa-mandates",
+                      "api-reference/generated/core/update-sepa-mandate"
+                    ]
+                  }
                 ]
               },
               {
                 "group": "Employees",
                 "pages": [
                   "api-reference/generated/core/create-employees",
+                  "api-reference/generated/core/get-employee",
                   "api-reference/generated/core/list-employees",
-                  "api-reference/generated/core/get-employee"
+                  {
+                    "group": "Job",
+                    "pages": [
+                      "api-reference/generated/core/create-employee-job-details",
+                      "api-reference/generated/core/get-employee-job-details",
+                      "api-reference/generated/core/update-employee-job-details",
+                      "api-reference/generated/core/get-employee-job-details-history"
+                    ]
+                  },
+                  {
+                    "group": "Insurance Details",
+                    "pages": [
+                      "api-reference/generated/core/create-employee-insurance-details",
+                      "api-reference/generated/core/get-employee-insurance-details",
+                      "api-reference/generated/core/update-employee-insurance-details",
+                      "api-reference/generated/core/get-employee-insurance-details-history"
+                    ]
+                  },
+                  {
+                    "group": "Tax Details",
+                    "pages": [
+                      "api-reference/generated/core/create-employee-tax-details",
+                      "api-reference/generated/core/get-employee-tax-details",
+                      "api-reference/generated/core/update-employee-tax-details",
+                      "api-reference/generated/core/get-employee-tax-details-history"
+                    ]
+                  }
                 ]
               }
             ]
@@ -46,9 +129,9 @@
           {
             "group": "Germany Paycheck Calculator",
             "pages": [
-              "api-reference/generated/germany-paycheck-calculator/list-insurance-agencies",
+              "api-reference/generated/germany-paycheck-calculator/list-health-agencies",
               "api-reference/generated/germany-paycheck-calculator/new-payroll",
-              "api-reference/generated/germany-paycheck-calculator/gtn"
+              "api-reference/generated/core/approve-payroll"
             ]
           },
           {
